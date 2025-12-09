@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AMIKO</title>
+
+  <!-- FAVICON -->
+  <link rel="icon" type="image/png" href="/favicon.png">
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- SPLASH SCREEN -->
+  <div id="splash">
+    <canvas id="particles"></canvas>
+
+    <div class="splash-content">
+      <h1 class="logo">AMIKO</h1>
+      <p id="phrase" class="phrase"></p>
+
+      <div class="loader"></div>
+      <button id="enterBtn" class="enter-btn">Entrar</button>
+    </div>
+
+    <audio id="introSound"
+      src="https://cdn.pixabay.com/audio/2021/09/20/audio_0b1aa8f490.mp3">
+    </audio>
+  </div>
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="brand-mini">
+      <img id="avatarMini" src="images/amiko_neutral.png" alt="AMIKO" />
+      <input id="botName" class="bot-name" value="AMIKO"
+             maxlength="20" aria-label="Nombre del asistente" />
+    </div>
+
+    <div class="top-actions">
+      <button id="darkToggle" title="Modo oscuro">🌙</button>
+      <button id="clearAll" title="Limpiar conversación">🧹</button>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div class="app">
+
+    <!-- PANEL LATERAL -->
+    <aside class="panel">
+      <div class="brand">
+        <img src="images/amiko_logo.png" alt="Logo AMIKO"
+             style="width:85px;height:auto;margin-right:12px;" />
+
+        <div>
+          <h2 id="brandTitle">AMIKO</h2>
+          <p class="muted">Asistente emocional — enfoque psicológico</p>
+        </div>
+      </div>
+
+      <div class="controls">
+
+        <label for="persona">Personalidad / Estilo</label>
+        <select id="persona">
+          <option value="empathetic">Empático (por defecto)</option>
+          <option value="psychologist">Psicológico (profundo)</option>
+          <option value="coach">Coach (orientado a acciones)</option>
+          <option value="friend">Amigo (informal)</option>
+        </select>
+
+        <label class="toggle-label">
+          <input id="voiceToggle" type="checkbox" />
+          Activar voz (TTS)
+        </label>
+
+        <label class="toggle-label">
+          <input id="autovibe" type="checkbox" checked />
+          Vibración al enviar (si disponible)
+        </label>
+      </div>
+
+      <!-- EMOJI SHORTCUTS -->
+      <div class="emo-section">
+        <p class="muted">Atajos emocionales</p>
+        <div class="emo-row">
+          <button class="emo-btn" data-emo="happy" title="Feliz">😊</button>
+          <button class="emo-btn" data-emo="sad" title="Triste">😢</button>
+          <button class="emo-btn" data-emo="stressed" title="Estresado">😰</button>
+          <button class="emo-btn" data-emo="neutral" title="Neutral">😐</button>
+        </div>
+      </div>
+
+      <!-- HISTORIAL -->
+      <div class="history-card">
+        <div class="history-header">
+          <strong>Historial emocional</strong>
+          <div>
+            <button id="exportBtn" title="Exportar conversación">⬇️</button>
+            <button id="clearHistory" title="Borrar historial">🗑️</button>
+          </div>
+        </div>
+
+        <div id="historyList" class="history-list"
+             role="log" aria-live="polite"></div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="chat-header">
+        <div>
+          <h3 id="sessionTitle">Conversación</h3>
+          <p id="sessionSubtitle" class="muted">
+            Tu conversación se guarda en tu navegador (local).
+          </p>
+        </div>
+
+        <div class="header-actions">
+          <button id="downloadTranscript">Exportar TXT</button>
+        </div>
+      </header>
+
+      <section class="chat-area">
+        <div id="chatBox" class="chat-box"
+             role="log" aria-live="polite"></div>
+
+        <div id="typingIndicator" class="typing-indicator" aria-hidden="true">
+          <span class="dot dot-1"></span>
+          <span class="dot dot-2"></span>
+          <span class="dot dot-3"></span>
+        </div>
+      </section>
+
+      <!-- COMPOSER -->
+      <div class="composer">
+        <div class="composer-left">
+          <button id="micBtn" title="Usar micrófono">🎙️</button>
+        </div>
+
+        <input id="userInput" type="text"
+               placeholder="Cuéntame... (Enter para enviar)"
+               autocomplete="off" />
+
+        <div class="composer-right">
+          <button id="sendBtn" class="primary">Enviar</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- SOUNDS -->
+  <audio id="sendSound" src="sounds/send.mp3" preload="auto"></audio>
+  <audio id="receiveSound" src="sounds/receive.mp3" preload="auto"></audio>
+
+  <script src="app.js"></script>
+</body>
+</html>
