@@ -11,6 +11,7 @@
    - Emojis auto-inserted for history
    - Export / download transcript
    - Decorative intro message + fade animation
+   - Fondo psicológico animado tipo aurora
 */
 
 const chatBox = document.getElementById("chatBox");
@@ -30,15 +31,60 @@ const receiveSound = document.getElementById("receiveSound");
 const autovibe = document.getElementById("autovibe");
 const micBtn = document.getElementById("micBtn");
 
-/* 👇 NUEVO: elegir un fondo psicológico aleatorio en cada recarga */
-const bgDecor = document.getElementById("bgDecor");
-const BG_THEMES = ["bg-aurora", "bg-clouds", "bg-sunset", "bg-soft-mist"];
+/* ------------------------------------------------------------------
+   🎨 NUEVO: FONDO ANIMADO TIPO AURORA (REEMPLAZA bgDecor COMPLETAMENTE)
+------------------------------------------------------------------- */
 
-if (bgDecor) {
-  const theme = BG_THEMES[Math.floor(Math.random() * BG_THEMES.length)];
-  bgDecor.classList.add(theme);
-}
-/* 👆 FIN BLOQUE NUEVO */
+window.addEventListener("DOMContentLoaded", () => {
+  const aurora = document.getElementById("auroraCanvas");
+  if (aurora) {
+    const ctx = aurora.getContext("2d");
+
+    aurora.width = innerWidth;
+    aurora.height = innerHeight;
+
+    const blobs = [];
+
+    // Crear 6 masas de color suaves
+    for (let i = 0; i < 6; i++) {
+      blobs.push({
+        x: Math.random() * aurora.width,
+        y: Math.random() * aurora.height,
+        r: 250 + Math.random() * 220,
+        dx: (Math.random() - 0.5) * 0.3,
+        dy: (Math.random() - 0.5) * 0.3,
+        color: `hsla(${Math.random() * 360}, 70%, 70%, 0.7)`
+      });
+    }
+
+    function animateAurora() {
+      ctx.clearRect(0, 0, aurora.width, aurora.height);
+
+      blobs.forEach(b => {
+        const grad = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
+        grad.addColorStop(0, b.color);
+        grad.addColorStop(1, "transparent");
+
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fill();
+
+        b.x += b.dx;
+        b.y += b.dy;
+
+        if (b.x < -200 || b.x > aurora.width + 200) b.dx *= -1;
+        if (b.y < -200 || b.y > aurora.height + 200) b.dy *= -1;
+      });
+
+      requestAnimationFrame(animateAurora);
+    }
+
+    animateAurora();
+  }
+});
+
+/* ------------------------------------------------------------------ */
 
 let conversation = [];
 const STORAGE_KEY = "amiko_conversation_v2";
@@ -87,7 +133,8 @@ function playSend() {
   if (sendSound) {
     try { sendSound.currentTime = 0; sendSound.play(); } catch {}
   }
-  if (autovibe && autovibe.checked && navigator.vibrate) navigator.vibrate(40);
+  if (autovibe && autovibe.checked && navigator.vibrate)
+    navigator.vibrate(40);
 }
 
 function playReceive() {
@@ -100,7 +147,8 @@ function playReceive() {
    TYPING INDICATOR
 -------------------------*/
 function showTyping(on = true) {
-  if (typingIndicator) typingIndicator.style.display = on ? "flex" : "none";
+  if (typingIndicator)
+    typingIndicator.style.display = on ? "flex" : "none";
 }
 
 /* -------------------------
@@ -148,7 +196,7 @@ function detectEmotion(text) {
 /* -------------------------
    MOCK RESPONSES
 -------------------------*/
-function getMockResponse(userMessage) {
+function getMockResponse() {
   const responses = [
     "Hola, ¿cómo estás? 😊",
     "Cuéntame más sobre eso...",
@@ -230,7 +278,7 @@ function downloadTranscript() {
 }
 
 /* -------------------------
-   CLEAR CONVERSATION (MODIFICADO)
+   CLEAR CONVERSATION
 -------------------------*/
 function clearConversation() {
   if (!confirm("¿Seguro que deseas borrar la conversación?")) return;
@@ -263,7 +311,7 @@ function closeAuthModal() {
 }
 
 /* -------------------------
-   MICRÓFONO REAL (MODIFICADO PARA AUTO-ENVIAR)
+   MICRÓFONO REAL (AUTO-ENVIAR)
 -------------------------*/
 let recognition;
 if ("webkitSpeechRecognition" in window) {
@@ -276,10 +324,8 @@ if ("webkitSpeechRecognition" in window) {
     const text = event.results[0][0].transcript;
     userInput.value = text;
 
-    /* ENVÍA AUTOMÁTICAMENTE */
-    if (text.trim().length > 0) {
+    if (text.trim().length > 0)
       sendMessage();
-    }
   };
 }
 
@@ -323,12 +369,15 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("registerBtn")?.addEventListener("click", closeAuthModal);
 
   renderHistoryList();
-  if (avatarMini && avatarImg) avatarMini.src = avatarImg.src || "images/amiko_logo.png";
+
+  if (avatarMini && avatarImg)
+    avatarMini.src = avatarImg.src || "images/amiko_logo.png";
 });
+
 
 /* ===============================
    SPLASH CON LLUVIA + ESTRELLAS
-=============================== */
+================================*/
 window.addEventListener("load", () => {
   const splash = document.getElementById("splash");
   const sound = document.getElementById("introSound");

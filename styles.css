@@ -33,38 +33,27 @@ html, body {
   padding: 0;
   height: 100%;
   font-family: Inter, system-ui, Arial;
+  overflow-x: hidden;
 }
 
 /* ============================================================= */
-/* ======================= FONDO DECORADO ======================= */
+/* ===================== FONDO AURORA GLOBAL ==================== */
 /* ============================================================= */
 
-/* NEW — Fondo decorado estilo opción C */
-/* 👈 FONDO CLARO + COVER + FULL SCREEN */
-#bgDecor {
+/* Canvas que cubrirá TODA la pantalla con la animación */
+#auroraCanvas {
   position: fixed;
   inset: 0;
-  z-index: -1;
-  background: radial-gradient(circle at top, #dbe9ff, #bfd7ff, #a6c4ff);
-  background-size: cover;
-  background-repeat: no-repeat;
-  opacity: 1;
   width: 100%;
   height: 100%;
-  display: block;
+  z-index: -2;
+  filter: blur(60px) brightness(1.2);
+  opacity: 0.85;
+  pointer-events: none;
 }
 
-/* FONDO ANIMADO EXISTENTE (LO RESPETO) */
-body {
-  background: transparent;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-
-/* DARK MODE mantiene el estilo */
-body.dark #bgDecor {
-  background: radial-gradient(circle at top, #203055, #0e1a33, #00040c);
-}
+/* Quitamos el viejo bgDecor (ya no se usa) */
+#bgDecor { display: none !important; }
 
 
 /* ============================================================= */
@@ -107,7 +96,7 @@ body.dark #bgDecor {
   width:86px;
 }
 
-/* NEW — BOTONES TOP-BAR MÁS GRANDES */
+/* TOP-BAR MÁS GRANDE */
 #darkToggle,
 #clearAll {
   font-size: 22px !important;
@@ -141,6 +130,7 @@ body.dark #bgDecor {
   align-items:flex-start;
 }
 
+
 /* ============================================================= */
 /* ============================ PANEL ============================ */
 /* ============================================================= */
@@ -170,6 +160,7 @@ body.dark #bgDecor {
 
 .muted{ color:var(--muted); font-size:13px; margin:0; }
 
+
 /* CONTROLS */
 .controls label{
   font-weight:600; font-size:13px; margin-top:6px; display:block;
@@ -185,6 +176,7 @@ body.dark #bgDecor {
   display:flex; align-items:center; gap:8px;
   margin-top:10px; font-size:14px;
 }
+
 
 /* EMOTIONS */
 .emo-row{ display:flex; gap:8px; margin-top:8px; }
@@ -265,7 +257,7 @@ body.dark #bgDecor {
   overflow: visible;
 }
 
-/* 🔵 FONDO ANIMADO PSICOLÓGICO DEL CHAT */
+/* Fondo suave + capa animada psicológica */
 .chat-box{
   flex:1;
   overflow-y:auto;
@@ -279,12 +271,9 @@ body.dark #bgDecor {
   gap:12px;
   position:relative;
   max-height:380px;
-
-  /* Fondo base muy suave, por si no carga animación */
   background:linear-gradient(180deg,#f8fbff,#ffffff);
 }
 
-/* Capa animada detrás de los mensajes (enfoque psicológico) */
 .chat-box::before {
   content: "";
   position: absolute;
@@ -301,7 +290,6 @@ body.dark #bgDecor {
   z-index: 0;
 }
 
-/* Aseguramos que el contenido vaya encima de la animación */
 .chat-box > * {
   position: relative;
   z-index: 1;
@@ -391,7 +379,7 @@ body.dark #bgDecor {
   padding-top:6px;
 }
 
-/* NEW — MICRÓFONO MÁS GRANDE */
+/* MIC AMPLIADO */
 #micBtn {
   font-size: 26px;
   padding: 12px 14px;
@@ -546,65 +534,11 @@ body.dark #bgDecor {
 
 
 /* ============================================================= */
-/* ======================= MODAL AUTH =========================== */
-/* ============================================================= */
-
-.auth-modal {
-  position:fixed;
-  inset:0;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  background:rgba(5,10,25,0.6);
-  backdrop-filter:blur(4px);
-  z-index:99998;
-}
-
-.auth-modal.show { display:flex; }
-
-.auth-card {
-  background:var(--card);
-  padding:24px 28px;
-  border-radius:18px;
-  box-shadow:0 20px 60px rgba(0,0,0,0.35);
-  max-width:360px;
-  width:90%;
-  text-align:center;
-}
-
-.auth-btn {
-  width:100%;
-  padding:10px 14px;
-  margin-top:8px;
-  border-radius:12px;
-  border:1px solid #e6eefc;
-  background:#f8fbff;
-  cursor:pointer;
-  font-size:15px;
-  transition:0.2s ease;
-}
-
-.auth-btn:hover {
-  transform:translateY(-2px);
-  box-shadow:0 8px 20px rgba(15,23,42,0.16);
-}
-
-
-/* ============================================================= */
 /* ============ ANIMACIÓN FONDO PSICOLÓGICO DEL CHAT =========== */
 /* ============================================================= */
 
 @keyframes calmFlow {
-  0% {
-    transform: translate3d(-6px, -4px, 0) scale(1);
-    filter: blur(0.4px);
-  }
-  50% {
-    transform: translate3d(4px, 6px, 0) scale(1.02);
-    filter: blur(0.8px);
-  }
-  100% {
-    transform: translate3d(-3px, 3px, 0) scale(1.01);
-    filter: blur(0.5px);
-  }
+  0% { transform: translate3d(-6px, -4px, 0) scale(1); filter: blur(0.4px); }
+  50% { transform: translate3d(4px, 6px, 0) scale(1.02); filter: blur(0.8px); }
+  100% { transform: translate3d(-3px, 3px, 0) scale(1.01); filter: blur(0.5px); }
 }
