@@ -30,7 +30,7 @@ const receiveSound = document.getElementById("receiveSound");
 const autovibe = document.getElementById("autovibe");
 const micBtn = document.getElementById("micBtn");
 
-/* 👇 NUEVO: elegir un fondo psicológico aleatorio en cada recarga */
+/* 👇 fondo psicológico aleatorio en cada recarga */
 const bgDecor = document.getElementById("bgDecor");
 const BG_THEMES = ["bg-aurora", "bg-clouds", "bg-sunset", "bg-soft-mist"];
 
@@ -38,7 +38,6 @@ if (bgDecor) {
   const theme = BG_THEMES[Math.floor(Math.random() * BG_THEMES.length)];
   bgDecor.classList.add(theme);
 }
-/* 👆 FIN BLOQUE NUEVO */
 
 let conversation = [];
 const STORAGE_KEY = "amiko_conversation_v2";
@@ -230,7 +229,7 @@ function downloadTranscript() {
 }
 
 /* -------------------------
-   CLEAR CONVERSATION (MODIFICADO)
+   CLEAR CONVERSATION
 -------------------------*/
 function clearConversation() {
   if (!confirm("¿Seguro que deseas borrar la conversación?")) return;
@@ -263,7 +262,7 @@ function closeAuthModal() {
 }
 
 /* -------------------------
-   MICRÓFONO REAL (MODIFICADO PARA AUTO-ENVIAR)
+   MICRÓFONO
 -------------------------*/
 let recognition;
 if ("webkitSpeechRecognition" in window) {
@@ -275,11 +274,7 @@ if ("webkitSpeechRecognition" in window) {
   recognition.onresult = (event) => {
     const text = event.results[0][0].transcript;
     userInput.value = text;
-
-    /* ENVÍA AUTOMÁTICAMENTE */
-    if (text.trim().length > 0) {
-      sendMessage();
-    }
+    if (text.trim().length > 0) sendMessage();
   };
 }
 
@@ -327,7 +322,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ===============================
-   SPLASH CON LLUVIA + ESTRELLAS
+   ✅ FIX REAL: FRASES ROTANDO
 =============================== */
 window.addEventListener("load", () => {
   const splash = document.getElementById("splash");
@@ -345,7 +340,19 @@ window.addEventListener("load", () => {
     "Aquí estoy, escucha lo que sientes."
   ];
 
-  phraseEl.textContent = frases[Math.floor(Math.random() * frases.length)];
+  let indexFrase = 0;
+
+  function rotarFrase() {
+    phraseEl.style.opacity = 0;
+    setTimeout(() => {
+      phraseEl.textContent = frases[indexFrase];
+      phraseEl.style.opacity = 1;
+      indexFrase = (indexFrase + 1) % frases.length;
+    }, 300);
+  }
+
+  rotarFrase();
+  setInterval(rotarFrase, 2200);
 
   const canvas = document.getElementById("particles");
   const ctx = canvas.getContext("2d");
