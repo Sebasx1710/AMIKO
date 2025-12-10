@@ -30,6 +30,16 @@ const receiveSound = document.getElementById("receiveSound");
 const autovibe = document.getElementById("autovibe");
 const micBtn = document.getElementById("micBtn");
 
+/* 👇 NUEVO: elegir un fondo psicológico aleatorio en cada recarga */
+const bgDecor = document.getElementById("bgDecor");
+const BG_THEMES = ["bg-aurora", "bg-clouds", "bg-sunset", "bg-soft-mist"];
+
+if (bgDecor) {
+  const theme = BG_THEMES[Math.floor(Math.random() * BG_THEMES.length)];
+  bgDecor.classList.add(theme);
+}
+/* 👆 FIN BLOQUE NUEVO */
+
 let conversation = [];
 const STORAGE_KEY = "amiko_conversation_v2";
 const SALUDO_INICIAL = "Hola, soy Amiko 😊 ¿En qué puedo ayudarte hoy?";
@@ -253,7 +263,7 @@ function closeAuthModal() {
 }
 
 /* -------------------------
-   MICRÓFONO REAL (AUTO-ENVIAR)
+   MICRÓFONO REAL (MODIFICADO PARA AUTO-ENVIAR)
 -------------------------*/
 let recognition;
 if ("webkitSpeechRecognition" in window) {
@@ -266,7 +276,7 @@ if ("webkitSpeechRecognition" in window) {
     const text = event.results[0][0].transcript;
     userInput.value = text;
 
-    // Enviar automáticamente lo que se dictó
+    /* ENVÍA AUTOMÁTICAMENTE */
     if (text.trim().length > 0) {
       sendMessage();
     }
@@ -325,9 +335,7 @@ window.addEventListener("load", () => {
   const phraseEl = document.getElementById("phrase");
   const enterBtn = document.getElementById("enterBtn");
   const loader = document.getElementById("loader");
-  const bgDecor = document.getElementById("bgDecor");
 
-  // Frases del splash
   const frases = [
     "Hoy es un buen día para escucharte.",
     "Tu bienestar es importante.",
@@ -337,34 +345,7 @@ window.addEventListener("load", () => {
     "Aquí estoy, escucha lo que sientes."
   ];
 
-  // 🔁 ROTAR FRASES DEL SPLASH
-  if (phraseEl) {
-    let index = Math.floor(Math.random() * frases.length);
-    phraseEl.textContent = frases[index];
-
-    setInterval(() => {
-      index = (index + 1) % frases.length;
-      phraseEl.style.opacity = 0;
-
-      setTimeout(() => {
-        phraseEl.textContent = frases[index];
-        phraseEl.style.opacity = 1;
-      }, 250);
-    }, 2600);
-  }
-
-  // 🎨 FONDOS CLAROS ALEATORIOS PARA bgDecor (por recarga)
-  if (bgDecor) {
-    const fondos = [
-      "radial-gradient(circle at top, #dbe9ff, #bfd7ff, #a6c4ff)",
-      "radial-gradient(circle at top, #ffeef2, #ffd6e0, #f9c5ff)",
-      "radial-gradient(circle at top, #e0ffe4, #c1f5d1, #b3e6ff)",
-      "radial-gradient(circle at top, #fff7d6, #ffe4b3, #ffd1dc)",
-      "radial-gradient(circle at top, #e8f4ff, #f5f3ff, #ffeaf5)"
-    ];
-    const elegido = fondos[Math.floor(Math.random() * fondos.length)];
-    bgDecor.style.background = elegido;
-  }
+  phraseEl.textContent = frases[Math.floor(Math.random() * frases.length)];
 
   const canvas = document.getElementById("particles");
   const ctx = canvas.getContext("2d");
