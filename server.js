@@ -2,8 +2,14 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { OpenAI } from "openai";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const app = express();
+
+// Necesario para obtener __dirname en ESModules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // ---------------------------
 // MIDDLEWARES
@@ -13,6 +19,9 @@ app.use(cors({
   origin: "*",         // Permitir que AMIKO frontend se conecte sin bloqueos
   methods: "GET,POST",
 }));
+
+// Permitir servir archivos estáticos (index.html, css, js, images, etc.)
+app.use(express.static(__dirname));
 
 // ---------------------------
 // CLIENTE OPENAI
@@ -33,14 +42,12 @@ app.post("/api/chat", async (req, res) => {
   try {
     const { message, personality } = req.body;
 
-    // Validación básica
     if (!message) {
       return res.status(400).json({
         reply: "No enviaste ningún mensaje.",
       });
     }
 
-    // Prompt psicológico
     const prompt = `
 Eres AMIKO, un asistente emocional empático y con enfoque psicológico.
 Tu personalidad es: ${personality || "empático"}.
@@ -56,7 +63,6 @@ Usuario: ${message}
 AMIKO:
     `;
 
-    // Llamada a OpenAI
     const response = await client.responses.create({
       model: "gpt-4o-mini",
       input: prompt,
@@ -65,17 +71,22 @@ AMIKO:
 
     const reply = response.output_text || "Lo siento, no pude generar una respuesta.";
 
-    // Enviar respuesta al frontend
     res.json({ reply });
 
   } catch (error) {
     console.error("❌ ERROR DE OPENAI:", error);
 
-    // Respuesta de error segura
     res.status(500).json({
       reply: "Lo siento, ocurrió un error al procesar tu mensaje.",
     });
   }
+});
+
+// ---------------------------
+// SERVIR INDEX.HTML
+// ---------------------------
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
 // ---------------------------
