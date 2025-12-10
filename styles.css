@@ -569,3 +569,23 @@ html, body {
     filter: blur(0.5px);
   }
 }
+/* ============================================================= */
+/* ============ FONDO ANIMADO SOLO PARA LA PÁGINA ============== */
+/* ============================================================= */
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background: linear-gradient(120deg, #89f7fe, #66a6ff, #d9a7c7, #fffcdc);
+  background-size: 400% 400%;
+  animation: pageBackground 18s ease-in-out infinite;
+}
+
+/* Animación del fondo de la página */
+@keyframes pageBackground {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
