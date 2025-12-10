@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="es">
 <head>
   <meta charset="utf-8" />
@@ -20,15 +20,25 @@
       <h1 class="logo">AMIKO</h1>
       <p id="phrase" class="phrase"></p>
 
-      <!-- ✅ AQUÍ ESTABA EL ERROR: AHORA TIENE ID -->
       <div id="loader" class="loader"></div>
-
       <button id="enterBtn" class="enter-btn">Entrar</button>
     </div>
 
     <audio id="introSound"
       src="https://cdn.pixabay.com/audio/2021/09/20/audio_0b1aa8f490.mp3">
     </audio>
+  </div>
+
+  <!-- MODAL DE OPCIONES (LOGIN / REGISTRO / MODO FANTASMA) -->
+  <div id="authModal" class="auth-modal">
+    <div class="auth-card">
+      <h2 class="auth-title">¿Cómo quieres continuar?</h2>
+      <p class="muted-auth">Elige un modo para usar AMIKO.</p>
+
+      <button id="loginBtn" class="auth-btn primary-auth">Iniciar sesión</button>
+      <button id="registerBtn" class="auth-btn">Registrarse</button>
+      <button id="guestBtn" class="auth-btn ghost-auth">Continuar en modo fantasma 👻</button>
+    </div>
   </div>
 
   <!-- TOPBAR -->

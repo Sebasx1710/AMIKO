@@ -310,9 +310,95 @@ body.dark {
   box-shadow:0 6px 18px rgba(20,30,60,0.03);
 }
 
-/* ... TODO TU CSS ORIGINAL SIGUE ÍNTEGRO ... */
+.bubble .bubble-ava{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  flex-shrink:0;
+  object-fit:cover;
+  box-shadow:0 6px 18px rgba(20,30,60,0.04);
+}
 
-/* ---------- SPLASH MEJORADO ---------- */
+.bubble .bubble-content{
+  white-space:pre-wrap;
+}
+
+.bot{
+  background:var(--bot-bg);
+  border-left:4px solid var(--accent);
+  color:#0f2a55;
+}
+
+.bot .bubble-ava{
+  margin-right:6px;
+  border:2px solid #e6f0ff;
+}
+
+.user{
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  color:white;
+  margin-left:auto;
+  border-bottom-right-radius:6px;
+}
+
+.user .bubble-ava{
+  display:none;
+}
+
+/* COMPOSER */
+.composer{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  padding-top:6px;
+  flex-shrink:0;
+}
+
+.composer-left{
+  display:flex;
+  align-items:center;
+}
+
+.composer input{
+  flex:1;
+  padding:14px;
+  border-radius:18px;
+  border:1px solid #e6eefc;
+  font-size:15px;
+  background:linear-gradient(180deg,#fff,#fbfdff);
+}
+
+.primary{
+  padding:12px 16px;
+  border-radius:14px;
+  background:var(--accent);
+  color:white;
+  border:none;
+  cursor:pointer;
+  box-shadow:0 8px 20px rgba(74,144,226,0.16);
+}
+
+/* RESPONSIVE */
+@media (max-width:900px){
+  .app{
+    flex-direction:column;
+    padding:12px;
+    margin:20px auto;
+    position:static;
+    transform:none;
+    top:auto;
+    left:auto;
+  }
+  .panel{
+    width:100%;
+  }
+  .chat-box{
+    min-height:260px;
+    max-height:60vh;
+  }
+}
+
+/* SPLASH */
 #splash {
   position: fixed;
   top: 0; left: 0;
@@ -329,10 +415,7 @@ body.dark {
   transition: opacity 1.4s ease;
 }
 
-#splash.fade-out { 
-  opacity:0; 
-  pointer-events:none; 
-}
+#splash.fade-out { opacity:0; pointer-events:none; }
 
 #particles {
   position:absolute;
@@ -345,10 +428,14 @@ body.dark {
   position:relative;
   z-index:5;
   animation: riseUp 1.4s ease forwards;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
 }
 
 .logo {
-  font-size:62px;
+  font-size:80px;            /* Opción 1: más grande */
   font-weight:900;
   color:white;
   letter-spacing:6px;
@@ -357,9 +444,9 @@ body.dark {
 }
 
 .phrase {
-  font-size:20px;
+  font-size:22px;            /* un poco más grande */
   color:#eaf3ff;
-  margin-top:12px;
+  margin-top:4px;            /* más pegada a AMIKO */
   min-height:26px;
   transition:opacity .4s;
 }
@@ -377,8 +464,8 @@ body.dark {
 
 .enter-btn {
   margin-top:20px;
-  padding:12px 26px;
-  font-size:18px;
+  padding:12px 26px;       /* más grande */
+  font-size:18px;          /* más grande */
   color:#1d2d4f;
   background:white;
   border:none;
@@ -390,6 +477,8 @@ body.dark {
   opacity:0;
   transform:translateY(20px) scale(.95);
   display:none;
+  margin-left:auto;
+  margin-right:auto;       /* centrado */
 }
 
 .enter-btn.show {
@@ -407,7 +496,7 @@ body.dark {
 
 @keyframes glow {
   0%,100%{text-shadow:0 0 16px white;}
-  50%{text-shadow:0 0 36px white;}
+  50%{text-shadow:0 0 32px white;}
 }
 
 @keyframes riseUp {
@@ -420,25 +509,74 @@ body.dark {
   50% {background-position:100% 50%;}
   100% {background-position:0% 50%;}
 }
-/* ✅ FIX FINAL SPLASH CENTRADO */
 
-.splash-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;   /* 🔥 ESTO centra TODO horizontalmente */
-  justify-content: center;
-  text-align: center;
+/* MODAL LOGIN / REGISTRO / MODO FANTASMA */
+.auth-modal {
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(5,10,25,0.6);
+  backdrop-filter:blur(4px);
+  z-index:99998;
 }
 
-/* Ajuste de distancia entre AMIKO y la frase */
-.phrase {
-  margin-top: 6px;   /* antes estaba muy separado */
+.auth-modal.show {
+  display:flex;
 }
 
-/* Asegurar botón perfectamente centrado */
-.enter-btn {
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
+.auth-card {
+  background:var(--card);
+  padding:24px 28px;
+  border-radius:18px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.35);
+  max-width:360px;
+  width:90%;
+  text-align:center;
 }
+
+.auth-title {
+  margin:0 0 4px 0;
+  font-size:20px;
+}
+
+.muted-auth {
+  margin:0 0 18px 0;
+  font-size:13px;
+  color:var(--muted);
+}
+
+.auth-btn {
+  width:100%;
+  padding:10px 14px;
+  margin-top:8px;
+  border-radius:12px;
+  border:1px solid #e6eefc;
+  background:#f8fbff;
+  cursor:pointer;
+  font-size:15px;
+  transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+
+.auth-btn + .auth-btn {
+  margin-top:10px;
+}
+
+.primary-auth {
+  background:var(--accent);
+  color:white;
+  border:none;
+  box-shadow:0 10px 24px rgba(74,144,226,0.35);
+}
+
+.ghost-auth {
+  background:#ffffff;
+}
+
+.auth-btn:hover {
+  transform:translateY(-2px);
+  box-shadow:0 8px 20px rgba(15,23,42,0.16);
+}
+
 

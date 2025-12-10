@@ -1,4 +1,17 @@
-/* AMIKO v2 - Psych style (Mock) */
+/* AMIKO v2 - Psych style (Mock) 
+   Features:
+   - Single response (no duplicates)
+   - Typing animation
+   - Sounds (send/receive)
+   - Vibration on send
+   - LocalStorage conversation memory (persist & restore)
+   - Dark mode toggle
+   - Bot name editable
+   - Avatar per-emotion & small avatar in bot bubble
+   - Emojis auto-inserted for history
+   - Export / download transcript
+   - Decorative intro message + fade animation
+*/
 
 const chatBox = document.getElementById("chatBox");
 const userInput = document.getElementById("userInput");
@@ -23,32 +36,57 @@ const STORAGE_KEY = "amiko_conversation_v2";
    UTILITIES
 -------------------------*/
 function persist() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(conversation));
-  renderHistoryList();
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(conversation));
+    renderHistoryList();
+  } catch (e) {
+    console.warn("No se pudo guardar en localStorage", e);
+  }
 }
 
 function restore() {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) return;
-  conversation = JSON.parse(raw);
-  chatBox.innerHTML = "";
-  conversation.forEach(m => renderMessage(m.role, m.text, false));
+  try {
+    conversation = JSON.parse(raw);
+    chatBox.innerHTML = "";
+    conversation.forEach(m => renderMessage(m.role, m.text, false));
+    scrollToBottom();
+  } catch (e) {
+    console.warn("Error restaurando conversación", e);
+  }
 }
 
 function addToConversation(role, text) {
-  conversation.push({ role, text, timestamp: Date.now() });
+  const item = { role, text, timestamp: Date.now() };
+  conversation.push(item);
   persist();
 }
 
+function scrollToBottom() {
+  if (!chatBox) return;
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+/* -------------------------
+   SOUNDS & VIBRATION
+-------------------------*/
 function playSend() {
-  sendSound?.play();
-  if (autovibe?.checked && navigator.vibrate) navigator.vibrate(40);
+  if (sendSound) {
+    try { sendSound.currentTime = 0; sendSound.play(); } catch {}
+  }
+  if (autovibe && autovibe.checked && navigator.vibrate) navigator.vibrate(40);
 }
 
 function playReceive() {
-  receiveSound?.play();
+  if (receiveSound) {
+    try { receiveSound.currentTime = 0; receiveSound.play(); } catch {}
+  }
 }
 
+/* -------------------------
+   TYPING INDICATOR
+-------------------------*/
 function showTyping(on = true) {
   if (typingIndicator) typingIndicator.style.display = on ? "flex" : "none";
 }
@@ -57,13 +95,16 @@ function showTyping(on = true) {
    RENDER MESSAGE
 -------------------------*/
 function renderMessage(role, text, save = true) {
+  if (!chatBox) return;
+
   const wrapper = document.createElement("div");
   wrapper.className = `bubble ${role} fadeIn`;
 
   if (role === "bot") {
     const ava = document.createElement("img");
     ava.className = "bubble-ava";
-    ava.src = "/images/amiko_logo.png";
+    // Ruta relativa para funcionar bien en GitHub Pages
+    try { ava.src = "images/amiko_logo.png"; } catch {}
     wrapper.appendChild(ava);
   }
 
@@ -73,9 +114,11 @@ function renderMessage(role, text, save = true) {
   wrapper.appendChild(content);
 
   chatBox.appendChild(wrapper);
-  chatBox.scrollTop = chatBox.scrollHeight;
+  scrollToBottom();
 
-  role === "bot" ? playReceive() : playSend();
+  if (role === "bot") playReceive();
+  else playSend();
+
   if (save) addToConversation(role, text);
 }
 
@@ -83,51 +126,148 @@ function renderMessage(role, text, save = true) {
    EMOTION DETECTION
 -------------------------*/
 function detectEmotion(text) {
-  const t = text.toLowerCase();
-  if (t.includes("triste")) return "sad";
-  if (t.includes("estres")) return "stressed";
-  if (t.includes("feliz")) return "happy";
+  const t = (text || "").toLowerCase();
+  if (!t) return "neutral";
+  if (t.includes("triste") || t.includes("deprim") || t.includes("llor")) return "sad";
+  if (t.includes("ansio") || t.includes("estres") || t.includes("nervi")) return "stressed";
+  if (t.includes("feliz") || t.includes("content") || t.includes("bien")) return "happy";
   return "neutral";
 }
 
 /* -------------------------
-   MOCK
+   MOCK RESPONSES
 -------------------------*/
-function getMockResponse() {
-  const r = [
-    "Estoy contigo 😊",
-    "Respira, todo va a estar bien.",
-    "Cuéntame más...",
-    "Te escucho."
+function getMockResponse(userMessage) {
+  const responses = [
+    "Hola, ¿cómo estás? 😊",
+    "Cuéntame más sobre eso...",
+    "Interesante, ¿puedes explicar un poco más?",
+    "¡Eso suena importante para ti! 😌",
+    "Lo siento, no entendí muy bien, ¿puedes repetir?"
   ];
-  return r[Math.floor(Math.random() * r.length)];
+  const randomIndex = Math.floor(Math.random() * responses.length);
+  return responses[randomIndex];
 }
 
 /* -------------------------
-   SEND MESSAGE
+   SEND MESSAGE (MOCK)
 -------------------------*/
 let sending = false;
 
 async function sendMessage() {
   if (sending) return;
-  const text = userInput.value.trim();
+
+  const text = (userInput?.value || "").trim();
   if (!text) return;
 
-  renderMessage("user", text);
-  userInput.value = "";
+  renderMessage("user", text, true);
+  if (userInput) userInput.value = "";
+  playSend();
   showTyping(true);
+
+  const waitTime = Math.min(2000, 600 + text.length * 8);
   sending = true;
 
-  await new Promise(r => setTimeout(r, 900 + text.length * 10));
+  try {
+    // Simular "tiempo de pensamiento"
+    await new Promise(r => setTimeout(r, waitTime));
 
-  const reply = getMockResponse(text);
-  const emo = detectEmotion(text);
-  avatarImg.src = `/images/amiko_${emo}.png`;
-  avatarMini.src = avatarImg.src;
+    const reply = getMockResponse(text);
 
-  showTyping(false);
-  renderMessage("bot", reply);
+    // Asignar avatar de emoción de forma segura
+    try {
+      const emo = detectEmotion(text);
+      if (avatarImg) avatarImg.src = `images/amiko_${emo}.png`;
+      if (avatarMini) avatarMini.src = avatarImg?.src || "";
+    } catch {}
+
+    showTyping(false);
+    renderMessage("bot", reply, true);
+
+  } catch (err) {
+    showTyping(false);
+    renderMessage("bot", "Hubo un error procesando tu mensaje.", true);
+  }
+
   sending = false;
+}
+
+/* -------------------------
+   HISTORY + EXPORT
+-------------------------*/
+function renderHistoryList() {
+  if (!historyList) return;
+  historyList.innerHTML = "";
+
+  for (let i = conversation.length - 1; i >= 0; i--) {
+    const it = conversation[i];
+    const div = document.createElement("div");
+    div.className = "history-item";
+    const time = new Date(it.timestamp).toLocaleString();
+    div.textContent = `${time} · ${it.role === "user" ? "🟦" : "🟪"} ${it.text.slice(0, 80)}`;
+    historyList.appendChild(div);
+  }
+}
+
+function downloadTranscript() {
+  const lines = conversation.map(
+    it => `[${new Date(it.timestamp).toLocaleString()}] ${it.role.toUpperCase()}: ${it.text}`
+  );
+  const blob = new Blob([lines.join("\n\n")], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `amiko_transcript_${Date.now()}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* -------------------------
+   CLEAR CONVERSATION
+-------------------------*/
+function clearConversation() {
+  if (!confirm("¿Seguro que deseas borrar la conversación?")) return;
+  conversation = [];
+  persist();
+  if (chatBox) chatBox.innerHTML = "";
+  renderMessage("bot", "Conversación borrada.", true);
+}
+
+/* -------------------------
+   CLEAR HISTORY
+-------------------------*/
+function clearHistoryList() {
+  if (!confirm("¿Eliminar historial emocional?")) return;
+  if (historyList) historyList.innerHTML = "";
+  localStorage.removeItem(STORAGE_KEY);
+}
+
+/* -------------------------
+   STATUS BUBBLE
+-------------------------*/
+function appendStatusNotice(text) {
+  if (!chatBox) return;
+  const div = document.createElement("div");
+  div.className = "bubble bot fadeIn";
+  const span = document.createElement("div");
+  span.className = "bubble-content";
+  span.textContent = text;
+  div.appendChild(span);
+  chatBox.appendChild(div);
+  scrollToBottom();
+}
+
+/* -------------------------
+   AUTH MODAL
+-------------------------*/
+function openAuthModal() {
+  const modal = document.getElementById("authModal");
+  if (modal) modal.classList.add("show");
+}
+
+function closeAuthModal() {
+  const modal = document.getElementById("authModal");
+  if (modal) modal.classList.remove("show");
 }
 
 /* -------------------------
@@ -135,12 +275,24 @@ async function sendMessage() {
 -------------------------*/
 document.addEventListener("DOMContentLoaded", () => {
   restore();
+
   if (!conversation.length) {
-    renderMessage("bot", "Hola, soy Amiko 😊");
+    renderMessage("bot", "Hola, soy Amiko 😊 ¿En qué puedo ayudarte hoy?", true);
   }
 
   sendBtn?.addEventListener("click", sendMessage);
-  userInput?.addEventListener("keypress", e => e.key === "Enter" && sendMessage());
+  userInput?.addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
+
+  emoBtns.forEach(b => b.addEventListener("click", () => {
+    const emo = b.dataset.emo;
+    try {
+      if (avatarImg) avatarImg.src = `images/amiko_${emo}.png`;
+      if (avatarMini) avatarMini.src = avatarImg?.src || "";
+    } catch {}
+    appendStatusNotice(`Estado visualizado: ${emo}`);
+  }));
+
+  downloadTranscriptBtn?.addEventListener("click", downloadTranscript);
 
   darkToggle?.addEventListener("click", () => document.body.classList.toggle("dark"));
 
@@ -148,52 +300,128 @@ document.addEventListener("DOMContentLoaded", () => {
     const brand = document.getElementById("brandTitle");
     if (brand) brand.textContent = botNameInput.value || "AMIKO";
   });
+
+  document.getElementById("clearAll")?.addEventListener("click", clearConversation);
+  document.getElementById("clearHistory")?.addEventListener("click", clearHistoryList);
+
+  // Botones del modal
+  document.getElementById("guestBtn")?.addEventListener("click", () => {
+    closeAuthModal();
+    appendStatusNotice("Has elegido continuar en modo fantasma 👻.");
+  });
+
+  document.getElementById("loginBtn")?.addEventListener("click", () => {
+    closeAuthModal();
+    appendStatusNotice("Opción 'Iniciar sesión' seleccionada (pendiente de implementar).");
+  });
+
+  document.getElementById("registerBtn")?.addEventListener("click", () => {
+    closeAuthModal();
+    appendStatusNotice("Opción 'Registrarse' seleccionada (pendiente de implementar).");
+  });
+
+  renderHistoryList();
+  if (avatarMini && avatarImg) avatarMini.src = avatarImg.src || "images/amiko_logo.png";
 });
 
 /* -------------------------
-   SPLASH + LOADER SYSTEM ✅ NUEVO
+   SPLASH SCREEN
 -------------------------*/
 window.addEventListener("load", () => {
   const splash = document.getElementById("splash");
-  const loader = document.getElementById("loader");
-  const enterBtn = document.getElementById("enterBtn");
   const sound = document.getElementById("introSound");
   const phraseEl = document.getElementById("phrase");
+  const enterBtn = document.getElementById("enterBtn");
+  const loader = document.getElementById("loader");
 
   const frases = [
     "Hoy es un buen día para escucharte.",
     "Tu bienestar es importante.",
     "Respira... estoy contigo.",
     "Un paso a la vez.",
-    "Aquí estoy para ti."
+    "No tienes que cargar todo solo.",
+    "Aquí estoy, escucha lo que sientes."
   ];
 
-  phraseEl.textContent = frases[Math.floor(Math.random() * frases.length)];
+  // Frase inicial
+  const index = new Date().getDate() % frases.length;
+  if (phraseEl) phraseEl.textContent = frases[index];
 
-  // 🔥 SIMULACIÓN DE CARGA REAL (3 SEGUNDOS)
-  enterBtn.style.display = "none";
+  // Control de reproducción de sonido
+  const lastVisit = localStorage.getItem("amiko_last_visit");
+  const now = Date.now();
+  const shouldPlayIntro = !lastVisit || now - lastVisit > 5000;
+  localStorage.setItem("amiko_last_visit", now.toString());
 
-  setTimeout(() => {
-    loader.style.opacity = "0";
+  // Partículas de fondo
+  const canvas = document.getElementById("particles");
+  const ctx = canvas?.getContext("2d");
+  if (canvas && ctx) {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let particles = [];
+    for (let i = 0; i < 70; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 3 + 1,
+        dx: (Math.random() - 0.5) * 0.6,
+        dy: (Math.random() - 0.5) * 0.6
+      });
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "rgba(255,255,255,.7)";
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+        p.x += p.dx;
+        p.y += p.dy;
+        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+  }
+
+  function closeSplash() {
+    if (splash) splash.classList.add("fade-out");
+    setTimeout(() => { if (splash) splash.style.display = "none"; }, 1500);
+  }
+
+  // Simulación de carga (3 segundos) antes de mostrar el botón
+  if (loader && enterBtn) {
+    enterBtn.style.display = "none";
 
     setTimeout(() => {
-      loader.style.display = "none";
-      enterBtn.style.display = "block";
-      enterBtn.classList.add("show");
+      loader.style.opacity = "0";
+      setTimeout(() => {
+        loader.style.display = "none";
+        enterBtn.style.display = "block";
+        enterBtn.classList.add("show");
 
-      sound.volume = 0.5;
-      sound.play().catch(() => {});
-    }, 500);
+        if (sound && shouldPlayIntro) {
+          sound.volume = 0.4;
+          sound.play().catch(() => {});
+        }
+      }, 500);
+    }, 3000);
+  }
 
-  }, 3000);
-
+  // Click en "Entrar" → cerrar splash y abrir modal
   enterBtn?.addEventListener("click", () => {
-    splash.classList.add("fade-out");
-    setTimeout(() => splash.style.display = "none", 1300);
+    closeSplash();
+    openAuthModal();
   });
 
+  // Rotación de frases
   let frasesIndex = 0;
   setInterval(() => {
+    if (!phraseEl) return;
     phraseEl.style.opacity = 0;
     setTimeout(() => {
       phraseEl.textContent = frases[frasesIndex % frases.length];
