@@ -1,13 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import path from "path";
-import { fileURLToPath } from "url";
 import { OpenAI } from "openai";
-
-// __dirname para ES Modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -15,17 +9,9 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Servir archivos estáticos desde /public
-app.use(express.static(path.join(__dirname, "public")));
-
-// Ruta principal → index.html
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
 // Cliente OpenAI
 const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY, // CLAVE OCULTA EN RENDER
 });
 
 // Endpoint del chat
@@ -60,17 +46,16 @@ AMIKO:
     res.json({ reply });
 
   } catch (error) {
-    console.error("❌ ERROR DE OPENAI:", error?.response?.data || error.message);
+    console.error("❌ ERROR DE OPENAI:", error?.message);
 
     res.status(500).json({
       reply: "Hubo un error procesando tu mensaje.",
-      error: error.message,
     });
   }
 });
 
-// Puerto
+// Puerto automático de Render
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 AMIKO server running on http://localhost:${PORT}`);
+  console.log(`🚀 AMIKO server running on port ${PORT}`);
 });

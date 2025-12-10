@@ -6,7 +6,7 @@
   <title>AMIKO</title>
 
   <!-- FAVICON -->
-  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="icon" type="image/png" href="favicon.png">
 
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -20,7 +20,9 @@
       <h1 class="logo">AMIKO</h1>
       <p id="phrase" class="phrase"></p>
 
-      <div class="loader"></div>
+      <!-- ✅ AQUÍ ESTABA EL ERROR: AHORA TIENE ID -->
+      <div id="loader" class="loader"></div>
+
       <button id="enterBtn" class="enter-btn">Entrar</button>
     </div>
 
@@ -32,7 +34,7 @@
   <!-- TOPBAR -->
   <div class="topbar">
     <div class="brand-mini">
-      <img id="avatarMini" src="images/amiko_neutral.png" alt="AMIKO" />
+      <img id="avatarMini" src="images/amiko_logo.png" alt="AMIKO" />
       <input id="botName" class="bot-name" value="AMIKO"
              maxlength="20" aria-label="Nombre del asistente" />
     </div>
@@ -59,7 +61,6 @@
       </div>
 
       <div class="controls">
-
         <label for="persona">Personalidad / Estilo</label>
         <select id="persona">
           <option value="empathetic">Empático (por defecto)</option>

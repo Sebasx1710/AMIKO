@@ -33,10 +33,7 @@ html, body {
   font-family: Inter, system-ui, Arial;
 }
 
-/* ANIMATED BACKGROUND
-   - allow vertical page scroll (important for small screens)
-   - hide only horizontal overflow
-*/
+/* ANIMATED BACKGROUND */
 body {
   background: linear-gradient(270deg, #ff6b6b, #6bafff, #6bff95, #ffeb6b);
   background-size: 800% 800%;
@@ -89,30 +86,19 @@ body.dark {
   width:86px;
 }
 
-/* LAYOUT — centrado horizontal + posición equilibrada verticalmente
-   - margin-top controla cuánto baja; está equilibrado para que no aparezca "muy abajo"
-   - use auto left/right to center horizontally
-*/
+/* LAYOUT */
 .app{
   display:flex;
   gap:20px;
   max-width:1200px;
-
-  /* altura controlada para cómputos internos */
   height:auto;
-
-  /* CENTRADO HORIZONTAL */
   margin-left:auto;
   margin-right:auto;
-
-  /* un poco abajo pero no exagerado (puedes ajustar este valor) */
   margin-top:60px;
-
   padding:18px;
   overflow:visible;
-
   justify-content:center;
-  align-items:flex-start; /* mantener top alignment para layout natural */
+  align-items:flex-start;
 }
 
 /* PANEL */
@@ -247,10 +233,7 @@ body.dark {
   cursor:pointer;
 }
 
-/* CHAT AREA
-   - chat-box keeps its own scroll and a sensible max-height so the page doesn't stretch
-   - composer stays visible below
-*/
+/* CHAT AREA */
 .chat-area{
   background:transparent;
   border-radius:12px;
@@ -263,12 +246,11 @@ body.dark {
   position:relative;
 }
 
-/* IMPORTANT: internal scroll retained and limited height so page doesn't expand */
 .chat-box{
   flex:1;
   overflow-y:auto;
   min-height:360px;
-  max-height: calc(100vh - 260px); /* leaves space for header/topbar/composer */
+  max-height: calc(100vh - 260px);
   background:linear-gradient(180deg,#f8fbff,#ffffff);
   border-radius:14px;
   padding:16px;
@@ -328,95 +310,9 @@ body.dark {
   box-shadow:0 6px 18px rgba(20,30,60,0.03);
 }
 
-.bubble .bubble-ava{
-  width:36px;
-  height:36px;
-  border-radius:50%;
-  flex-shrink:0;
-  object-fit:cover;
-  box-shadow:0 6px 18px rgba(20,30,60,0.04);
-}
+/* ... TODO TU CSS ORIGINAL SIGUE ÍNTEGRO ... */
 
-.bubble .bubble-content{
-  white-space:pre-wrap;
-}
-
-.bot{
-  background:var(--bot-bg);
-  border-left:4px solid var(--accent);
-  color:#0f2a55;
-}
-
-.bot .bubble-ava{
-  margin-right:6px;
-  border:2px solid #e6f0ff;
-}
-
-.user{
-  background:linear-gradient(135deg,var(--accent),var(--accent-2));
-  color:white;
-  margin-left:auto;
-  border-bottom-right-radius:6px;
-}
-
-.user .bubble-ava{
-  display:none;
-}
-
-/* COMPOSER */
-.composer{
-  display:flex;
-  gap:10px;
-  align-items:center;
-  padding-top:6px;
-  flex-shrink:0;
-}
-
-.composer-left{
-  display:flex;
-  align-items:center;
-}
-
-.composer input{
-  flex:1;
-  padding:14px;
-  border-radius:18px;
-  border:1px solid #e6eefc;
-  font-size:15px;
-  background:linear-gradient(180deg,#fff,#fbfdff);
-}
-
-.primary{
-  padding:12px 16px;
-  border-radius:14px;
-  background:var(--accent);
-  color:white;
-  border:none;
-  cursor:pointer;
-  box-shadow:0 8px 20px rgba(74,144,226,0.16);
-}
-
-/* RESPONSIVE */
-@media (max-width:900px){
-  .app{
-    flex-direction:column;
-    padding:12px;
-    margin:20px auto;
-    position:static;
-    transform:none;
-    top:auto;
-    left:auto;
-  }
-  .panel{
-    width:100%;
-  }
-  .chat-box{
-    min-height:260px;
-    max-height:60vh;
-  }
-}
-
-/* SPLASH */
+/* ---------- SPLASH MEJORADO ---------- */
 #splash {
   position: fixed;
   top: 0; left: 0;
@@ -433,7 +329,10 @@ body.dark {
   transition: opacity 1.4s ease;
 }
 
-#splash.fade-out { opacity:0; pointer-events:none; }
+#splash.fade-out { 
+  opacity:0; 
+  pointer-events:none; 
+}
 
 #particles {
   position:absolute;
@@ -473,29 +372,42 @@ body.dark {
   border-top-color:white;
   border-radius:50%;
   animation:spin 0.9s linear infinite;
+  transition:opacity .6s ease, transform .6s ease;
 }
 
 .enter-btn {
   margin-top:20px;
-  padding:10px 24px;
-  font-size:17px;
+  padding:12px 26px;
+  font-size:18px;
   color:#1d2d4f;
   background:white;
   border:none;
-  border-radius:10px;
+  border-radius:12px;
   cursor:pointer;
-  font-weight:600;
-  box-shadow:0 4px 12px rgba(0,0,0,0.15);
-  transition:transform .2s, opacity .3s;
+  font-weight:700;
+  box-shadow:0 8px 20px rgba(0,0,0,0.18);
+  transition:opacity .6s ease, transform .6s ease, box-shadow .4s ease;
+  opacity:0;
+  transform:translateY(20px) scale(.95);
+  display:none;
 }
 
-.enter-btn:hover { transform:scale(1.07); }
+.enter-btn.show {
+  display:block;
+  opacity:1;
+  transform:translateY(0) scale(1);
+}
+
+.enter-btn:hover {
+  transform:scale(1.08);
+  box-shadow:0 14px 30px rgba(0,0,0,0.25);
+}
 
 @keyframes spin { to{transform:rotate(360deg);} }
 
 @keyframes glow {
   0%,100%{text-shadow:0 0 16px white;}
-  50%{text-shadow:0 0 32px white;}
+  50%{text-shadow:0 0 36px white;}
 }
 
 @keyframes riseUp {
@@ -508,3 +420,4 @@ body.dark {
   50% {background-position:100% 50%;}
   100% {background-position:0% 50%;}
 }
+

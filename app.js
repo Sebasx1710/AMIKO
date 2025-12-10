@@ -1,17 +1,4 @@
-/* AMIKO v2 - Psych style (Mock) 
-   Features added:
-   - Single response (no duplicates)
-   - Typing animation
-   - Sounds (send/receive)
-   - Vibration on send
-   - LocalStorage conversation memory (persist & restore)
-   - Dark mode toggle
-   - Bot name editable
-   - Avatar per-emotion & small avatar in bot bubble
-   - Emojis auto-inserted for history
-   - Export / download transcript
-   - Decorative intro message + fade animation
-*/
+/* AMIKO v2 - Psych style (Mock) */
 
 const chatBox = document.getElementById("chatBox");
 const userInput = document.getElementById("userInput");
@@ -36,56 +23,32 @@ const STORAGE_KEY = "amiko_conversation_v2";
    UTILITIES
 -------------------------*/
 function persist() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(conversation));
-    renderHistoryList();
-  } catch (e) {
-    console.warn("No se pudo guardar en localStorage", e);
-  }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(conversation));
+  renderHistoryList();
 }
 
 function restore() {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) return;
-  try {
-    conversation = JSON.parse(raw);
-    chatBox.innerHTML = "";
-    conversation.forEach(m => renderMessage(m.role, m.text, false));
-    scrollToBottom();
-  } catch (e) {
-    console.warn("Error restaurando conversación", e);
-  }
+  conversation = JSON.parse(raw);
+  chatBox.innerHTML = "";
+  conversation.forEach(m => renderMessage(m.role, m.text, false));
 }
 
 function addToConversation(role, text) {
-  const item = { role, text, timestamp: Date.now() };
-  conversation.push(item);
+  conversation.push({ role, text, timestamp: Date.now() });
   persist();
 }
 
-function scrollToBottom() {
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-/* -------------------------
-   SOUNDS & VIBRATION
--------------------------*/
 function playSend() {
-  if (sendSound) {
-    try { sendSound.currentTime = 0; sendSound.play(); } catch {}
-  }
-  if (autovibe && autovibe.checked && navigator.vibrate) navigator.vibrate(40);
+  sendSound?.play();
+  if (autovibe?.checked && navigator.vibrate) navigator.vibrate(40);
 }
 
 function playReceive() {
-  if (receiveSound) {
-    try { receiveSound.currentTime = 0; receiveSound.play(); } catch {}
-  }
+  receiveSound?.play();
 }
 
-/* -------------------------
-   TYPING INDICATOR
--------------------------*/
 function showTyping(on = true) {
   if (typingIndicator) typingIndicator.style.display = on ? "flex" : "none";
 }
@@ -100,7 +63,7 @@ function renderMessage(role, text, save = true) {
   if (role === "bot") {
     const ava = document.createElement("img");
     ava.className = "bubble-ava";
-    try { ava.src = "/images/amiko_logo.png"; } catch {}
+    ava.src = "/images/amiko_logo.png";
     wrapper.appendChild(ava);
   }
 
@@ -110,11 +73,9 @@ function renderMessage(role, text, save = true) {
   wrapper.appendChild(content);
 
   chatBox.appendChild(wrapper);
-  scrollToBottom();
+  chatBox.scrollTop = chatBox.scrollHeight;
 
-  if (role === "bot") playReceive();
-  else playSend();
-
+  role === "bot" ? playReceive() : playSend();
   if (save) addToConversation(role, text);
 }
 
@@ -122,120 +83,51 @@ function renderMessage(role, text, save = true) {
    EMOTION DETECTION
 -------------------------*/
 function detectEmotion(text) {
-  const t = (text || "").toLowerCase();
-  if (!t) return "neutral";
-  if (t.includes("triste") || t.includes("deprim") || t.includes("llor")) return "sad";
-  if (t.includes("ansio") || t.includes("estres") || t.includes("nervi")) return "stressed";
-  if (t.includes("feliz") || t.includes("content") || t.includes("bien")) return "happy";
+  const t = text.toLowerCase();
+  if (t.includes("triste")) return "sad";
+  if (t.includes("estres")) return "stressed";
+  if (t.includes("feliz")) return "happy";
   return "neutral";
 }
 
 /* -------------------------
-   MOCK RESPONSES
+   MOCK
 -------------------------*/
-function getMockResponse(userMessage) {
-  const responses = [
-    "Hola, ¿cómo estás? 😊",
-    "Cuéntame más sobre eso...",
-    "Interesante, ¿puedes explicar un poco más?",
-    "¡Eso suena divertido! 😎",
-    "Lo siento, no entendí muy bien, ¿puedes repetir?"
+function getMockResponse() {
+  const r = [
+    "Estoy contigo 😊",
+    "Respira, todo va a estar bien.",
+    "Cuéntame más...",
+    "Te escucho."
   ];
-  const randomIndex = Math.floor(Math.random() * responses.length);
-  return responses[randomIndex];
+  return r[Math.floor(Math.random() * r.length)];
 }
 
 /* -------------------------
-   SEND MESSAGE (MOCK)
+   SEND MESSAGE
 -------------------------*/
 let sending = false;
 
 async function sendMessage() {
   if (sending) return;
-
-  const text = (userInput?.value || "").trim();
+  const text = userInput.value.trim();
   if (!text) return;
 
-  renderMessage("user", text, true);
-  if (userInput) userInput.value = "";
-  playSend();
+  renderMessage("user", text);
+  userInput.value = "";
   showTyping(true);
-
-  const waitTime = Math.min(2000, 600 + text.length * 8);
   sending = true;
 
-  try {
-    // Simular "tiempo de pensamiento"
-    await new Promise(r => setTimeout(r, waitTime));
+  await new Promise(r => setTimeout(r, 900 + text.length * 10));
 
-    const reply = getMockResponse(text);
+  const reply = getMockResponse(text);
+  const emo = detectEmotion(text);
+  avatarImg.src = `/images/amiko_${emo}.png`;
+  avatarMini.src = avatarImg.src;
 
-    // Asignar avatar de emoción de forma segura
-    try {
-      const emo = detectEmotion(text);
-      if (avatarImg) avatarImg.src = `/images/amiko_${emo}.png`;
-      if (avatarMini) avatarMini.src = avatarImg?.src || "";
-    } catch {}
-
-    showTyping(false);
-    renderMessage("bot", reply, true);
-
-  } catch (err) {
-    showTyping(false);
-    renderMessage("bot", "Hubo un error procesando tu mensaje.", true);
-  }
-
+  showTyping(false);
+  renderMessage("bot", reply);
   sending = false;
-}
-
-/* -------------------------
-   HISTORY + EXPORT
--------------------------*/
-function renderHistoryList() {
-  if (!historyList) return;
-  historyList.innerHTML = "";
-
-  for (let i = conversation.length - 1; i >= 0; i--) {
-    const it = conversation[i];
-    const div = document.createElement("div");
-    div.className = "history-item";
-    const time = new Date(it.timestamp).toLocaleString();
-    div.textContent = `${time} · ${it.role === "user" ? "🟦" : "🟪"} ${it.text.slice(0, 80)}`;
-    historyList.appendChild(div);
-  }
-}
-
-function downloadTranscript() {
-  const lines = conversation.map(
-    it => `[${new Date(it.timestamp).toLocaleString()}] ${it.role.toUpperCase()}: ${it.text}`
-  );
-  const blob = new Blob([lines.join("\n\n")], { type: "text/plain" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `amiko_transcript_${Date.now()}.txt`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-/* -------------------------
-   CLEAR CONVERSATION
--------------------------*/
-function clearConversation() {
-  if (!confirm("¿Seguro que deseas borrar la conversación?")) return;
-  conversation = [];
-  persist();
-  chatBox.innerHTML = "";
-  renderMessage("bot", "Conversación borrada.", true);
-}
-
-/* -------------------------
-   CLEAR HISTORY
--------------------------*/
-function clearHistoryList() {
-  if (!confirm("¿Eliminar historial emocional?")) return;
-  if (historyList) historyList.innerHTML = "";
-  localStorage.removeItem(STORAGE_KEY);
 }
 
 /* -------------------------
@@ -243,24 +135,12 @@ function clearHistoryList() {
 -------------------------*/
 document.addEventListener("DOMContentLoaded", () => {
   restore();
-
   if (!conversation.length) {
-    renderMessage("bot", "Hola, soy Amiko 😊 ¿En qué puedo ayudarte hoy?", true);
+    renderMessage("bot", "Hola, soy Amiko 😊");
   }
 
   sendBtn?.addEventListener("click", sendMessage);
-  userInput?.addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
-
-  emoBtns.forEach(b => b.addEventListener("click", () => {
-    const emo = b.dataset.emo;
-    try {
-      if (avatarImg) avatarImg.src = `/images/amiko_${emo}.png`;
-      if (avatarMini) avatarMini.src = avatarImg?.src || "";
-    } catch {}
-    appendStatusNotice(`Estado visualizado: ${emo}`);
-  }));
-
-  downloadTranscriptBtn?.addEventListener("click", downloadTranscript);
+  userInput?.addEventListener("keypress", e => e.key === "Enter" && sendMessage());
 
   darkToggle?.addEventListener("click", () => document.body.classList.toggle("dark"));
 
@@ -268,103 +148,52 @@ document.addEventListener("DOMContentLoaded", () => {
     const brand = document.getElementById("brandTitle");
     if (brand) brand.textContent = botNameInput.value || "AMIKO";
   });
-
-  document.getElementById("clearAll")?.addEventListener("click", clearConversation);
-  document.getElementById("clearHistory")?.addEventListener("click", clearHistoryList);
-
-  renderHistoryList();
-  if (avatarMini && avatarImg) avatarMini.src = avatarImg.src;
 });
 
 /* -------------------------
-   STATUS BUBBLE
--------------------------*/
-function appendStatusNotice(text) {
-  const div = document.createElement("div");
-  div.className = "bubble bot fadeIn";
-  const span = document.createElement("div");
-  span.className = "bubble-content";
-  span.textContent = text;
-  div.appendChild(span);
-  chatBox.appendChild(div);
-  scrollToBottom();
-}
-
-/* -------------------------
-   SPLASH SCREEN
+   SPLASH + LOADER SYSTEM ✅ NUEVO
 -------------------------*/
 window.addEventListener("load", () => {
   const splash = document.getElementById("splash");
+  const loader = document.getElementById("loader");
+  const enterBtn = document.getElementById("enterBtn");
   const sound = document.getElementById("introSound");
   const phraseEl = document.getElementById("phrase");
-  const enterBtn = document.getElementById("enterBtn");
 
   const frases = [
     "Hoy es un buen día para escucharte.",
     "Tu bienestar es importante.",
     "Respira... estoy contigo.",
     "Un paso a la vez.",
-    "No tienes que cargar todo solo.",
-    "Aquí estoy, escucha lo que sientes."
+    "Aquí estoy para ti."
   ];
 
-  const index = new Date().getDate() % frases.length;
-  if (phraseEl) phraseEl.textContent = frases[index];
+  phraseEl.textContent = frases[Math.floor(Math.random() * frases.length)];
 
-  const lastVisit = localStorage.getItem("amiko_last_visit");
-  const now = Date.now();
-  if (!lastVisit || now - lastVisit > 5000) {
-    if (sound) {
-      sound.volume = 0.4;
+  // 🔥 SIMULACIÓN DE CARGA REAL (3 SEGUNDOS)
+  enterBtn.style.display = "none";
+
+  setTimeout(() => {
+    loader.style.opacity = "0";
+
+    setTimeout(() => {
+      loader.style.display = "none";
+      enterBtn.style.display = "block";
+      enterBtn.classList.add("show");
+
+      sound.volume = 0.5;
       sound.play().catch(() => {});
-    }
-  }
-  localStorage.setItem("amiko_last_visit", now.toString());
+    }, 500);
 
-  const canvas = document.getElementById("particles");
-  const ctx = canvas?.getContext("2d");
-  if (canvas && ctx) {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+  }, 3000);
 
-    let particles = [];
-    for (let i = 0; i < 70; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        r: Math.random() * 3 + 1,
-        dx: (Math.random() - 0.5) * 0.6,
-        dy: (Math.random() - 0.5) * 0.6
-      });
-    }
-
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "rgba(255,255,255,.7)";
-      particles.forEach(p => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fill();
-        p.x += p.dx;
-        p.y += p.dy;
-        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
-      });
-      requestAnimationFrame(animate);
-    }
-    animate();
-  }
-
-  function closeSplash() {
-    if (splash) splash.classList.add("fade-out");
-    setTimeout(() => { if (splash) splash.style.display = "none"; }, 1500);
-  }
-
-  enterBtn?.addEventListener("click", closeSplash);
+  enterBtn?.addEventListener("click", () => {
+    splash.classList.add("fade-out");
+    setTimeout(() => splash.style.display = "none", 1300);
+  });
 
   let frasesIndex = 0;
   setInterval(() => {
-    if (!phraseEl) return;
     phraseEl.style.opacity = 0;
     setTimeout(() => {
       phraseEl.textContent = frases[frasesIndex % frases.length];
