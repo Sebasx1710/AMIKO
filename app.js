@@ -253,7 +253,7 @@ function closeAuthModal() {
 }
 
 /* -------------------------
-   MICRÓFONO REAL
+   MICRÓFONO REAL (MODIFICADO PARA AUTO-ENVIAR)
 -------------------------*/
 let recognition;
 if ("webkitSpeechRecognition" in window) {
@@ -265,6 +265,11 @@ if ("webkitSpeechRecognition" in window) {
   recognition.onresult = (event) => {
     const text = event.results[0][0].transcript;
     userInput.value = text;
+
+    /* 👇 NUEVO — ENVÍA AUTOMÁTICAMENTE */
+    if (text.trim().length > 0) {
+      sendMessage();
+    }
   };
 }
 
@@ -312,7 +317,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ===============================
-   ✅ SPLASH CON LLUVIA + ESTRELLAS
+   SPLASH CON LLUVIA + ESTRELLAS
 =============================== */
 window.addEventListener("load", () => {
   const splash = document.getElementById("splash");
@@ -340,43 +345,60 @@ window.addEventListener("load", () => {
   const stars = [];
   const rain = [];
 
-  for (let i = 0; i < 80; i++) stars.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*2+1 });
-  for (let i = 0; i < 120; i++) rain.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, speed: Math.random()*4+4 });
+  for (let i = 0; i < 80; i++)
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 2 + 1
+    });
+
+  for (let i = 0; i < 120; i++)
+    rain.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      speed: Math.random() * 4 + 4
+    });
 
   function animate() {
-    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     stars.forEach(s => {
       ctx.beginPath();
-      ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-      ctx.fillStyle="white";
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = "white";
       ctx.fill();
     });
 
-    ctx.strokeStyle="rgba(200,200,255,.5)";
-    rain.forEach(r=>{
+    ctx.strokeStyle = "rgba(200,200,255,.5)";
+    rain.forEach(r => {
       ctx.beginPath();
-      ctx.moveTo(r.x,r.y);
-      ctx.lineTo(r.x,r.y+12);
+      ctx.moveTo(r.x, r.y);
+      ctx.lineTo(r.x, r.y + 12);
       ctx.stroke();
-      r.y+=r.speed;
-      if(r.y>canvas.height){r.y=-20;r.x=Math.random()*canvas.width;}
+      r.y += r.speed;
+      if (r.y > canvas.height) {
+        r.y = -20;
+        r.x = Math.random() * canvas.width;
+      }
     });
 
     requestAnimationFrame(animate);
   }
   animate();
 
-  setTimeout(()=>{
-    loader.style.display="none";
-    enterBtn.style.display="block";
+  setTimeout(() => {
+    loader.style.display = "none";
+    enterBtn.style.display = "block";
     enterBtn.classList.add("show");
-    if(sound){sound.volume=0.4;sound.play().catch(()=>{});}
-  },3000);
+    if (sound) {
+      sound.volume = 0.4;
+      sound.play().catch(() => {});
+    }
+  }, 3000);
 
-  enterBtn.addEventListener("click",()=>{
+  enterBtn.addEventListener("click", () => {
     splash.classList.add("fade-out");
-    setTimeout(()=>splash.style.display="none",1400);
+    setTimeout(() => (splash.style.display = "none"), 1400);
     openAuthModal();
   });
 });

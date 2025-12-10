@@ -259,7 +259,7 @@ body.dark #bgDecor {
   flex-direction:column;
   position:relative;
 
-  /* 👈 CAMBIO SOLICITADO: evitar que crezca infinito */
+  /* 👈 CAMBIO: evitar que crezca infinito */
   height: auto;
 }
 
@@ -277,7 +277,7 @@ body.dark #bgDecor {
   gap:12px;
   position:relative;
 
-  /* 👈 CAMBIO SOLICITADO: cuadro con scroll fijo */
+  /* 👈 CAMBIO: cuadro fijo con scroll */
   max-height:380px;
 }
 
