@@ -28,9 +28,11 @@ const botNameInput = document.getElementById("botName");
 const sendSound = document.getElementById("sendSound");
 const receiveSound = document.getElementById("receiveSound");
 const autovibe = document.getElementById("autovibe");
+const micBtn = document.getElementById("micBtn");
 
 let conversation = [];
 const STORAGE_KEY = "amiko_conversation_v2";
+const SALUDO_INICIAL = "Hola, soy Amiko 😊 ¿En qué puedo ayudarte hoy?";
 
 /* -------------------------
    UTILITIES
@@ -144,8 +146,7 @@ function getMockResponse(userMessage) {
     "¡Eso suena importante para ti! 😌",
     "Lo siento, no entendí muy bien, ¿puedes repetir?"
   ];
-  const randomIndex = Math.floor(Math.random() * responses.length);
-  return responses[randomIndex];
+  return responses[Math.floor(Math.random() * responses.length)];
 }
 
 /* -------------------------
@@ -169,7 +170,6 @@ async function sendMessage() {
 
   try {
     await new Promise(r => setTimeout(r, waitTime));
-
     const reply = getMockResponse(text);
 
     try {
@@ -220,14 +220,14 @@ function downloadTranscript() {
 }
 
 /* -------------------------
-   CLEAR CONVERSATION
+   CLEAR CONVERSATION (MODIFICADO)
 -------------------------*/
 function clearConversation() {
   if (!confirm("¿Seguro que deseas borrar la conversación?")) return;
   conversation = [];
   persist();
   if (chatBox) chatBox.innerHTML = "";
-  renderMessage("bot", "Conversación borrada.", true);
+  renderMessage("bot", SALUDO_INICIAL, true);
 }
 
 /* -------------------------
@@ -237,21 +237,6 @@ function clearHistoryList() {
   if (!confirm("¿Eliminar historial emocional?")) return;
   if (historyList) historyList.innerHTML = "";
   localStorage.removeItem(STORAGE_KEY);
-}
-
-/* -------------------------
-   STATUS BUBBLE
--------------------------*/
-function appendStatusNotice(text) {
-  if (!chatBox) return;
-  const div = document.createElement("div");
-  div.className = "bubble bot fadeIn";
-  const span = document.createElement("div");
-  span.className = "bubble-content";
-  span.textContent = text;
-  div.appendChild(span);
-  chatBox.appendChild(div);
-  scrollToBottom();
 }
 
 /* -------------------------
@@ -268,14 +253,33 @@ function closeAuthModal() {
 }
 
 /* -------------------------
+   MICRÓFONO REAL
+-------------------------*/
+let recognition;
+if ("webkitSpeechRecognition" in window) {
+  recognition = new webkitSpeechRecognition();
+  recognition.lang = "es-ES";
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  recognition.onresult = (event) => {
+    const text = event.results[0][0].transcript;
+    userInput.value = text;
+  };
+}
+
+micBtn?.addEventListener("click", () => {
+  if (recognition) recognition.start();
+});
+
+/* -------------------------
    UI EVENTS
 -------------------------*/
 document.addEventListener("DOMContentLoaded", () => {
   restore();
 
-  if (!conversation.length) {
-    renderMessage("bot", "Hola, soy Amiko 😊 ¿En qué puedo ayudarte hoy?", true);
-  }
+  chatBox.innerHTML = "";
+  renderMessage("bot", SALUDO_INICIAL, true);
 
   sendBtn?.addEventListener("click", sendMessage);
   userInput?.addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
@@ -286,11 +290,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (avatarImg) avatarImg.src = `images/amiko_${emo}.png`;
       if (avatarMini) avatarMini.src = avatarImg?.src || "";
     } catch {}
-    appendStatusNotice(`Estado visualizado: ${emo}`);
   }));
 
   downloadTranscriptBtn?.addEventListener("click", downloadTranscript);
-
   darkToggle?.addEventListener("click", () => document.body.classList.toggle("dark"));
 
   botNameInput?.addEventListener("input", () => {
@@ -301,123 +303,10 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("clearAll")?.addEventListener("click", clearConversation);
   document.getElementById("clearHistory")?.addEventListener("click", clearHistoryList);
 
-  document.getElementById("guestBtn")?.addEventListener("click", () => {
-    closeAuthModal();
-    appendStatusNotice("Has elegido continuar en modo fantasma 👻.");
-  });
-
-  document.getElementById("loginBtn")?.addEventListener("click", () => {
-    closeAuthModal();
-    appendStatusNotice("Opción 'Iniciar sesión' seleccionada (pendiente).");
-  });
-
-  document.getElementById("registerBtn")?.addEventListener("click", () => {
-    closeAuthModal();
-    appendStatusNotice("Opción 'Registrarse' seleccionada (pendiente).");
-  });
+  document.getElementById("guestBtn")?.addEventListener("click", closeAuthModal);
+  document.getElementById("loginBtn")?.addEventListener("click", closeAuthModal);
+  document.getElementById("registerBtn")?.addEventListener("click", closeAuthModal);
 
   renderHistoryList();
   if (avatarMini && avatarImg) avatarMini.src = avatarImg.src || "images/amiko_logo.png";
-});
-
-/* -------------------------
-   SPLASH SCREEN — ⭐ ESTRELLAS + 🌧️ LLUVIA
--------------------------*/
-window.addEventListener("load", () => {
-  const splash = document.getElementById("splash");
-  const sound = document.getElementById("introSound");
-  const phraseEl = document.getElementById("phrase");
-  const enterBtn = document.getElementById("enterBtn");
-  const loader = document.getElementById("loader");
-
-  const frases = [
-    "Hoy es un buen día para escucharte.",
-    "Tu bienestar es importante.",
-    "Respira... estoy contigo.",
-    "Un paso a la vez.",
-    "No tienes que cargar todo solo.",
-    "Aquí estoy, escucha lo que sientes."
-  ];
-
-  const index = new Date().getDate() % frases.length;
-  if (phraseEl) phraseEl.textContent = frases[index];
-
-  const lastVisit = localStorage.getItem("amiko_last_visit");
-  const now = Date.now();
-  const shouldPlayIntro = !lastVisit || now - lastVisit > 5000;
-  localStorage.setItem("amiko_last_visit", now.toString());
-
-  // ⭐ ESTRELLAS + 🌧️ LLUVIA
-  const canvas = document.getElementById("particles");
-  const ctx = canvas?.getContext("2d");
-
-  if (canvas && ctx) {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    let stars = [], rain = [];
-
-    for (let i = 0; i < 120; i++)
-      stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,a:Math.random(),da:Math.random()*0.01+0.002});
-
-    for (let i = 0; i < 140; i++)
-      rain.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,l:Math.random()*14+8,v:Math.random()*2+1});
-
-    function animate() {
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-
-      stars.forEach(s=>{
-        ctx.fillStyle=`rgba(255,255,255,${s.a})`;
-        ctx.beginPath();ctx.arc(s.x,s.y,1.4,0,Math.PI*2);ctx.fill();
-        s.a+=s.da; if(s.a<=0||s.a>=1)s.da*=-1;
-      });
-
-      ctx.strokeStyle="rgba(160,190,255,.35)";
-      rain.forEach(r=>{
-        ctx.beginPath();ctx.moveTo(r.x,r.y);ctx.lineTo(r.x,r.y+r.l);ctx.stroke();
-        r.y+=r.v; if(r.y>canvas.height){r.y=-20;r.x=Math.random()*canvas.width;}
-      });
-
-      requestAnimationFrame(animate);
-    }
-    animate();
-  }
-
-  // Loader 3s
-  if (loader && enterBtn) {
-    enterBtn.style.display = "none";
-
-    setTimeout(() => {
-      loader.style.opacity = "0";
-      setTimeout(() => {
-        loader.style.display = "none";
-        enterBtn.style.display = "block";
-        enterBtn.classList.add("show");
-
-        if (sound && shouldPlayIntro) {
-          sound.volume = 0.4;
-          sound.play().catch(() => {});
-        }
-      }, 500);
-    }, 3000);
-  }
-
-  // Click en "Entrar"
-  enterBtn?.addEventListener("click", () => {
-    if (splash) splash.classList.add("fade-out");
-    setTimeout(() => { if (splash) splash.style.display = "none"; }, 1500);
-    openAuthModal();
-  });
-
-  // Rotación de frases
-  let frasesIndex = 0;
-  setInterval(() => {
-    if (!phraseEl) return;
-    phraseEl.style.opacity = 0;
-    setTimeout(() => {
-      phraseEl.textContent = frases[frasesIndex % frases.length];
-      phraseEl.style.opacity = 1;
-      frasesIndex++;
-    }, 500);
-  }, 1800);
 });

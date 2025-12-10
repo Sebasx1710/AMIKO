@@ -1,16 +1,19 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AMIKO</title>
 
-  <!-- FAVICON (CORREGIDO) -->
+  <!-- FAVICON -->
   <link rel="icon" type="image/png" href="favicon.png">
 
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+
+  <!-- FONDO ANIMADO GLOBAL -->
+  <canvas id="bgDecor"></canvas>
 
   <!-- SPLASH SCREEN -->
   <div id="splash">
@@ -25,8 +28,7 @@
     </div>
 
     <audio id="introSound"
-      src="https://cdn.pixabay.com/audio/2021/09/20/audio_0b1aa8f490.mp3">
-    </audio>
+      src="https://cdn.pixabay.com/audio/2021/09/20/audio_0b1aa8f490.mp3"></audio>
   </div>
 
   <!-- MODAL DE AUTENTICACIÓN -->
@@ -37,22 +39,21 @@
 
       <button id="loginBtn" class="auth-btn primary-auth">Iniciar sesión</button>
       <button id="registerBtn" class="auth-btn">Registrarse</button>
-      <button id="guestBtn" class="auth-btn ghost-auth">Continuar en modo fantasma 👻</button>
+      <button id="guestBtn" class="auth-btn ghost-auth">Continuar sin cuenta</button>
     </div>
   </div>
 
   <!-- TOPBAR -->
   <div class="topbar">
     <div class="brand-mini">
-      <!-- AVATAR CORREGIDO -->
       <img id="avatarMini" src="images/amiko_logo.png" alt="AMIKO" />
       <input id="botName" class="bot-name" value="AMIKO"
              maxlength="20" aria-label="Nombre del asistente" />
     </div>
 
     <div class="top-actions">
-      <button id="darkToggle" title="Modo oscuro">🌙</button>
-      <button id="clearAll" title="Limpiar conversación">🧹</button>
+      <button id="darkToggle" class="top-btn" title="Modo oscuro">🌙</button>
+      <button id="clearAll" class="top-btn" title="Limpiar conversación">🧹</button>
     </div>
   </div>
 
@@ -147,7 +148,7 @@
       <!-- COMPOSER -->
       <div class="composer">
         <div class="composer-left">
-          <button id="micBtn" title="Usar micrófono">🎙️</button>
+          <button id="micBtn" class="mic-btn" title="Usar micrófono">🎙️</button>
         </div>
 
         <input id="userInput" type="text"

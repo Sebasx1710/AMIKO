@@ -1,3 +1,7 @@
+/* ============================================================= */
+/* ====================== VARIABLES BASE ======================== */
+/* ============================================================= */
+
 :root {
   --bg1:#eef6ff;
   --bg2:#f9fbff;
@@ -22,9 +26,7 @@ body.dark {
 }
 
 /* RESET */
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 html, body {
   margin: 0;
@@ -33,23 +35,36 @@ html, body {
   font-family: Inter, system-ui, Arial;
 }
 
-/* ANIMATED BACKGROUND */
+/* ============================================================= */
+/* ======================= FONDO DECORADO ======================= */
+/* ============================================================= */
+
+/* NEW — Fondo decorado estilo opción C */
+#bgDecor {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(circle at top, #7aa9ff, #1a2a5e, #050816);
+  opacity: 1;
+}
+
+/* FONDO ANIMADO EXISTENTE (LO RESPETO) */
 body {
-  background: linear-gradient(270deg, #ff6b6b, #6bafff, #6bff95, #ffeb6b);
-  background-size: 800% 800%;
-  animation: animatedGradient 30s ease infinite;
-  transition: background .5s;
+  background: transparent;
   overflow-x: hidden;
   overflow-y: auto;
 }
 
-body.dark {
-  background: linear-gradient(270deg, #071022, #071827, #0c1726, #0f1724);
-  background-size: 800% 800%;
-  animation: animatedGradient 40s ease infinite;
+/* DARK MODE mantiene el estilo */
+body.dark #bgDecor {
+  background: radial-gradient(circle at top, #203055, #0e1a33, #00040c);
 }
 
-/* TOPBAR */
+
+/* ============================================================= */
+/* =========================== TOPBAR =========================== */
+/* ============================================================= */
+
 .topbar{
   position:fixed;
   right:18px;
@@ -86,22 +101,44 @@ body.dark {
   width:86px;
 }
 
-/* LAYOUT */
+/* NEW — BOTONES TOP-BAR MÁS GRANDES */
+#darkToggle,
+#clearAll {
+  font-size: 22px !important;
+  padding: 10px 14px !important;
+  border-radius: 14px !important;
+  background: white !important;
+  border: none !important;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  transition: 0.2s ease;
+}
+
+#darkToggle:hover,
+#clearAll:hover {
+  transform: scale(1.15);
+}
+
+
+/* ============================================================= */
+/* =========================== LAYOUT ============================ */
+/* ============================================================= */
+
 .app{
   display:flex;
   gap:20px;
   max-width:1200px;
   height:auto;
-  margin-left:auto;
-  margin-right:auto;
-  margin-top:60px;
+  margin:60px auto 0;
   padding:18px;
-  overflow:visible;
   justify-content:center;
   align-items:flex-start;
 }
 
-/* PANEL */
+/* ============================================================= */
+/* ============================ PANEL ============================ */
+/* ============================================================= */
+
 .panel{
   width:320px;
   background:var(--card);
@@ -113,11 +150,7 @@ body.dark {
   gap:14px;
 }
 
-.brand{
-  display:flex;
-  gap:12px;
-  align-items:center;
-}
+.brand{ display:flex; gap:12px; align-items:center; }
 
 .avatar{
   width:64px;
@@ -127,56 +160,33 @@ body.dark {
   border:2px solid #eff6ff;
 }
 
-.brand h2{
-  margin:0;
-}
+.brand h2{ margin:0; }
 
-.muted{
-  color:var(--muted);
-  font-size:13px;
-  margin:0;
-}
+.muted{ color:var(--muted); font-size:13px; margin:0; }
 
 /* CONTROLS */
 .controls label{
-  font-weight:600;
-  font-size:13px;
-  margin-top:6px;
-  display:block;
+  font-weight:600; font-size:13px; margin-top:6px; display:block;
 }
 
 .controls select{
-  width:100%;
-  padding:10px;
-  border-radius:12px;
-  border:1px solid #e6eefc;
-  margin-top:6px;
+  width:100%; padding:10px; border-radius:12px;
+  border:1px solid #e6eefc; margin-top:6px;
   background:linear-gradient(180deg,#fff,#fbfdff);
 }
 
 .toggle-label{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  margin-top:10px;
-  font-size:14px;
+  display:flex; align-items:center; gap:8px;
+  margin-top:10px; font-size:14px;
 }
 
-.emo-row{
-  display:flex;
-  gap:8px;
-  margin-top:8px;
-}
+/* EMOTIONS */
+.emo-row{ display:flex; gap:8px; margin-top:8px; }
 
 .emo-btn{
-  flex:1;
-  padding:10px;
-  border-radius:10px;
-  border:1px solid #e6eefc;
-  background:linear-gradient(180deg,#fff,#f6fbff);
-  cursor:pointer;
-  font-size:18px;
-  transition:.12s;
+  flex:1; padding:10px; border-radius:10px; border:1px solid #e6eefc;
+  background:linear-gradient(180deg,#fff,#f6fbff); cursor:pointer;
+  font-size:18px; transition:.12s;
 }
 
 .emo-btn:hover{
@@ -184,7 +194,11 @@ body.dark {
   box-shadow:0 6px 18px rgba(20,30,60,0.06);
 }
 
-/* HISTORY */
+
+/* ============================================================= */
+/* =========================== HISTORIAL ========================= */
+/* ============================================================= */
+
 .history-card{
   background:linear-gradient(180deg,#ffffff,#fbfdff);
   padding:10px;
@@ -210,18 +224,17 @@ body.dark {
   border-bottom:1px dashed #f1f3f6;
 }
 
-/* MAIN CHAT AREA */
+
+/* ============================================================= */
+/* ========================== CHAT AREA ========================== */
+/* ============================================================= */
+
 .main{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  min-height:0;
+  flex:1; display:flex; flex-direction:column; min-height:0;
 }
 
 .chat-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+  display:flex; align-items:center; justify-content:space-between;
   padding:6px 10px;
 }
 
@@ -233,14 +246,12 @@ body.dark {
   cursor:pointer;
 }
 
-/* CHAT AREA */
+/* CHAT */
 .chat-area{
   background:transparent;
   border-radius:12px;
   padding:10px;
   flex:1;
-  overflow:visible;
-  min-height:0;
   display:flex;
   flex-direction:column;
   position:relative;
@@ -250,7 +261,6 @@ body.dark {
   flex:1;
   overflow-y:auto;
   min-height:360px;
-  max-height: calc(100vh - 260px);
   background:linear-gradient(180deg,#f8fbff,#ffffff);
   border-radius:14px;
   padding:16px;
@@ -262,34 +272,28 @@ body.dark {
   position:relative;
 }
 
-/* TYPING INDICATOR */
+
+/* ============================================================= */
+/* ======================= TYPING INDICATOR ===================== */
+/* ============================================================= */
+
 .typing-indicator{
   position:absolute;
-  bottom:10px;
-  left:50%;
-  transform:translateX(-50%);
-  display:flex;
-  gap:6px;
-  align-items:center;
-  justify-content:center;
-  padding:4px 6px;
+  bottom:10px; left:50%; transform:translateX(-50%);
+  display:flex; gap:6px;
   background:rgba(255,255,255,0.7);
+  padding:4px 6px; border-radius:10px;
   backdrop-filter:blur(4px);
-  border-radius:10px;
   z-index:5;
 }
 
 .typing-indicator .dot{
-  width:9px;
-  height:9px;
-  border-radius:50%;
-  background:#c9d7ff;
-  opacity:.6;
-  animation:blink 1s infinite;
+  width:9px; height:9px; border-radius:50%;
+  background:#c9d7ff; opacity:.6; animation:blink 1s infinite;
 }
 
-.typing-indicator .dot-2{animation-delay:.15s;}
-.typing-indicator .dot-3{animation-delay:.3s;}
+.typing-indicator .dot-2{ animation-delay:.15s; }
+.typing-indicator .dot-3{ animation-delay:.3s; }
 
 @keyframes blink{
   0%{transform:translateY(0);opacity:.2}
@@ -297,24 +301,24 @@ body.dark {
   100%{transform:translateY(0);opacity:.2}
 }
 
-/* BUBBLES */
+
+/* ============================================================= */
+/* ============================ BUBBLES ========================== */
+/* ============================================================= */
+
 .bubble{
   display:flex;
-  align-items:flex-start;
   gap:10px;
   padding:12px 14px;
   border-radius:14px;
-  margin:8px 0;
   max-width:84%;
   line-height:1.45;
   box-shadow:0 6px 18px rgba(20,30,60,0.03);
 }
 
 .bubble .bubble-ava{
-  width:36px;
-  height:36px;
+  width:36px; height:36px;
   border-radius:50%;
-  flex-shrink:0;
   object-fit:cover;
   box-shadow:0 6px 18px rgba(20,30,60,0.04);
 }
@@ -330,7 +334,6 @@ body.dark {
 }
 
 .bot .bubble-ava{
-  margin-right:6px;
   border:2px solid #e6f0ff;
 }
 
@@ -341,22 +344,33 @@ body.dark {
   border-bottom-right-radius:6px;
 }
 
-.user .bubble-ava{
-  display:none;
-}
 
-/* COMPOSER */
+/* ============================================================= */
+/* ============================ COMPOSER ========================= */
+/* ============================================================= */
+
 .composer{
   display:flex;
   gap:10px;
   align-items:center;
   padding-top:6px;
-  flex-shrink:0;
 }
 
-.composer-left{
-  display:flex;
-  align-items:center;
+/* NEW — MICRÓFONO MÁS GRANDE */
+#micBtn {
+  font-size: 26px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #eef4ff;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  transition: 0.2s ease;
+}
+
+#micBtn:hover {
+  transform: scale(1.20);
+  background: #dfe7ff;
 }
 
 .composer input{
@@ -378,16 +392,16 @@ body.dark {
   box-shadow:0 8px 20px rgba(74,144,226,0.16);
 }
 
-/* RESPONSIVE */
+
+/* ============================================================= */
+/* ========================== RESPONSIVE ========================= */
+/* ============================================================= */
+
 @media (max-width:900px){
   .app{
     flex-direction:column;
     padding:12px;
     margin:20px auto;
-    position:static;
-    transform:none;
-    top:auto;
-    left:auto;
   }
   .panel{
     width:100%;
@@ -398,11 +412,11 @@ body.dark {
   }
 }
 
-/* ===================== */
-/* ===== SPLASH =========*/
-/* ===================== */
 
-/* ✅ MÁS OSCURO */
+/* ============================================================= */
+/* =========================== SPLASH =========================== */
+/* ============================================================= */
+
 #splash {
   position: fixed;
   inset: 0;
@@ -461,7 +475,6 @@ body.dark {
   border-top-color:white;
   border-radius:50%;
   animation:spin 0.9s linear infinite;
-  transition:opacity .6s ease, transform .6s ease;
 }
 
 .enter-btn {
@@ -475,12 +488,9 @@ body.dark {
   cursor:pointer;
   font-weight:700;
   box-shadow:0 8px 20px rgba(0,0,0,0.18);
-  transition:opacity .6s ease, transform .6s ease, box-shadow .4s ease;
   opacity:0;
   transform:translateY(20px) scale(.95);
   display:none;
-  margin-left:auto;
-  margin-right:auto;
 }
 
 .enter-btn.show {
@@ -489,30 +499,20 @@ body.dark {
   transform:translateY(0) scale(1);
 }
 
-.enter-btn:hover {
-  transform:scale(1.08);
-  box-shadow:0 14px 30px rgba(0,0,0,0.25);
-}
-
 @keyframes spin { to{transform:rotate(360deg);} }
-
-@keyframes glow {
-  0%,100%{text-shadow:0 0 16px white;}
-  50%{text-shadow:0 0 32px white;}
+@keyframes glow { 
+  0%,100%{text-shadow:0 0 16px white;} 
+  50%{text-shadow:0 0 32px white;} 
 }
-
 @keyframes riseUp {
   from{opacity:0; transform:translateY(40px);}
   to{opacity:1; transform:translateY(0);}
 }
 
-@keyframes animatedGradient {
-  0% {background-position:0% 50%;}
-  50% {background-position:100% 50%;}
-  100% {background-position:0% 50%;}
-}
+/* ============================================================= */
+/* ======================= MODAL AUTH =========================== */
+/* ============================================================= */
 
-/* ===== MODAL AUTENTICACIÓN ===== */
 .auth-modal {
   position:fixed;
   inset:0;
@@ -524,9 +524,7 @@ body.dark {
   z-index:99998;
 }
 
-.auth-modal.show {
-  display:flex;
-}
+.auth-modal.show { display:flex; }
 
 .auth-card {
   background:var(--card);
@@ -538,17 +536,6 @@ body.dark {
   text-align:center;
 }
 
-.auth-title {
-  margin:0 0 4px 0;
-  font-size:20px;
-}
-
-.muted-auth {
-  margin:0 0 18px 0;
-  font-size:13px;
-  color:var(--muted);
-}
-
 .auth-btn {
   width:100%;
   padding:10px 14px;
@@ -558,22 +545,7 @@ body.dark {
   background:#f8fbff;
   cursor:pointer;
   font-size:15px;
-  transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
-}
-
-.auth-btn + .auth-btn {
-  margin-top:10px;
-}
-
-.primary-auth {
-  background:var(--accent);
-  color:white;
-  border:none;
-  box-shadow:0 10px 24px rgba(74,144,226,0.35);
-}
-
-.ghost-auth {
-  background:#ffffff;
+  transition:0.2s ease;
 }
 
 .auth-btn:hover {
