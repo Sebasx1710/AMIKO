@@ -420,4 +420,25 @@ body.dark {
   50% {background-position:100% 50%;}
   100% {background-position:0% 50%;}
 }
+/* ✅ FIX FINAL SPLASH CENTRADO */
+
+.splash-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* 🔥 ESTO centra TODO horizontalmente */
+  justify-content: center;
+  text-align: center;
+}
+
+/* Ajuste de distancia entre AMIKO y la frase */
+.phrase {
+  margin-top: 6px;   /* antes estaba muy separado */
+}
+
+/* Asegurar botón perfectamente centrado */
+.enter-btn {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
 
