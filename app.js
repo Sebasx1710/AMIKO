@@ -145,20 +145,6 @@ function detectEmotion(text) {
 }
 
 /* -------------------------
-   MOCK RESPONSES
--------------------------*/
-function getMockResponse(userMessage) {
-  const responses = [
-    "Hola, ¿cómo estás? 😊",
-    "Cuéntame más sobre eso...",
-    "Interesante, ¿puedes explicar un poco más?",
-    "¡Eso suena importante para ti! 😌",
-    "Lo siento, no entendí muy bien, ¿puedes repetir?"
-  ];
-  return responses[Math.floor(Math.random() * responses.length)];
-}
-
-/* -------------------------
    SEND MESSAGE (MOCK)
 -------------------------*/
 let sending = false;
@@ -170,33 +156,40 @@ async function sendMessage() {
   if (!text) return;
 
   renderMessage("user", text, true);
-  if (userInput) userInput.value = "";
+  userInput.value = "";
   playSend();
   showTyping(true);
-
-  const waitTime = Math.min(2000, 600 + text.length * 8);
   sending = true;
 
   try {
-    await new Promise(r => setTimeout(r, waitTime));
-    const reply = getMockResponse(text);
+    const response = await fetch("http://localhost:3000/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: text,
+        personality: personaSel?.value || "empathetic"
+      })
+    });
 
-    try {
-      const emo = detectEmotion(text);
-      if (avatarImg) avatarImg.src = `images/amiko_${emo}.png`;
-      if (avatarMini) avatarMini.src = avatarImg?.src || "";
-    } catch {}
+    const data = await response.json();
+
+    const emo = detectEmotion(text);
+    if (avatarImg) avatarImg.src = `images/amiko_${emo}.png`;
+    if (avatarMini) avatarMini.src = avatarImg?.src || "";
 
     showTyping(false);
-    renderMessage("bot", reply, true);
+    renderMessage("bot", data.reply || "No pude responder.", true);
 
-  } catch (err) {
+  } catch (error) {
     showTyping(false);
-    renderMessage("bot", "Hubo un error procesando tu mensaje.", true);
+    renderMessage("bot", "❌ Error conectando con el servidor.", true);
   }
 
   sending = false;
 }
+
 
 /* -------------------------
    HISTORY + EXPORT

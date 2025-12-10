@@ -8,8 +8,21 @@
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "openai": "^4.47.1"
-  }
+    "dotenv": "^16.6.1",
+    "express": "^4.22.1",
+    "openai": "^4.104.0"
+  },
+  "description": "\"# AMIKO\"",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sebasx1710/AMIKO.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sebasx1710/AMIKO/issues"
+  },
+  "homepage": "https://github.com/Sebasx1710/AMIKO#readme",
+  "devDependencies": {}
 }
