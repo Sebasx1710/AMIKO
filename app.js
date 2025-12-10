@@ -310,3 +310,73 @@ document.addEventListener("DOMContentLoaded", () => {
   renderHistoryList();
   if (avatarMini && avatarImg) avatarMini.src = avatarImg.src || "images/amiko_logo.png";
 });
+
+/* ===============================
+   ✅ SPLASH CON LLUVIA + ESTRELLAS
+=============================== */
+window.addEventListener("load", () => {
+  const splash = document.getElementById("splash");
+  const sound = document.getElementById("introSound");
+  const phraseEl = document.getElementById("phrase");
+  const enterBtn = document.getElementById("enterBtn");
+  const loader = document.getElementById("loader");
+
+  const frases = [
+    "Hoy es un buen día para escucharte.",
+    "Tu bienestar es importante.",
+    "Respira... estoy contigo.",
+    "Un paso a la vez.",
+    "No tienes que cargar todo solo.",
+    "Aquí estoy, escucha lo que sientes."
+  ];
+
+  phraseEl.textContent = frases[Math.floor(Math.random() * frases.length)];
+
+  const canvas = document.getElementById("particles");
+  const ctx = canvas.getContext("2d");
+  canvas.width = innerWidth;
+  canvas.height = innerHeight;
+
+  const stars = [];
+  const rain = [];
+
+  for (let i = 0; i < 80; i++) stars.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*2+1 });
+  for (let i = 0; i < 120; i++) rain.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, speed: Math.random()*4+4 });
+
+  function animate() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    stars.forEach(s => {
+      ctx.beginPath();
+      ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle="white";
+      ctx.fill();
+    });
+
+    ctx.strokeStyle="rgba(200,200,255,.5)";
+    rain.forEach(r=>{
+      ctx.beginPath();
+      ctx.moveTo(r.x,r.y);
+      ctx.lineTo(r.x,r.y+12);
+      ctx.stroke();
+      r.y+=r.speed;
+      if(r.y>canvas.height){r.y=-20;r.x=Math.random()*canvas.width;}
+    });
+
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  setTimeout(()=>{
+    loader.style.display="none";
+    enterBtn.style.display="block";
+    enterBtn.classList.add("show");
+    if(sound){sound.volume=0.4;sound.play().catch(()=>{});}
+  },3000);
+
+  enterBtn.addEventListener("click",()=>{
+    splash.classList.add("fade-out");
+    setTimeout(()=>splash.style.display="none",1400);
+    openAuthModal();
+  });
+});
