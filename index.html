@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AMIKO</title>
 
-  <!-- FAVICON -->
+  <!-- FAVICON (CORREGIDO) -->
   <link rel="icon" type="image/png" href="favicon.png">
 
   <link rel="stylesheet" href="styles.css" />
@@ -29,11 +29,11 @@
     </audio>
   </div>
 
-  <!-- MODAL DE OPCIONES (LOGIN / REGISTRO / MODO FANTASMA) -->
+  <!-- MODAL DE AUTENTICACIÓN -->
   <div id="authModal" class="auth-modal">
     <div class="auth-card">
       <h2 class="auth-title">¿Cómo quieres continuar?</h2>
-      <p class="muted-auth">Elige un modo para usar AMIKO.</p>
+      <p class="muted-auth">Selecciona un método para iniciar tu experiencia.</p>
 
       <button id="loginBtn" class="auth-btn primary-auth">Iniciar sesión</button>
       <button id="registerBtn" class="auth-btn">Registrarse</button>
@@ -44,6 +44,7 @@
   <!-- TOPBAR -->
   <div class="topbar">
     <div class="brand-mini">
+      <!-- AVATAR CORREGIDO -->
       <img id="avatarMini" src="images/amiko_logo.png" alt="AMIKO" />
       <input id="botName" class="bot-name" value="AMIKO"
              maxlength="20" aria-label="Nombre del asistente" />
@@ -71,6 +72,7 @@
       </div>
 
       <div class="controls">
+
         <label for="persona">Personalidad / Estilo</label>
         <select id="persona">
           <option value="empathetic">Empático (por defecto)</option>

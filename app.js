@@ -103,7 +103,6 @@ function renderMessage(role, text, save = true) {
   if (role === "bot") {
     const ava = document.createElement("img");
     ava.className = "bubble-ava";
-    // Ruta relativa para funcionar bien en GitHub Pages
     try { ava.src = "images/amiko_logo.png"; } catch {}
     wrapper.appendChild(ava);
   }
@@ -169,12 +168,10 @@ async function sendMessage() {
   sending = true;
 
   try {
-    // Simular "tiempo de pensamiento"
     await new Promise(r => setTimeout(r, waitTime));
 
     const reply = getMockResponse(text);
 
-    // Asignar avatar de emoción de forma segura
     try {
       const emo = detectEmotion(text);
       if (avatarImg) avatarImg.src = `images/amiko_${emo}.png`;
@@ -304,7 +301,6 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("clearAll")?.addEventListener("click", clearConversation);
   document.getElementById("clearHistory")?.addEventListener("click", clearHistoryList);
 
-  // Botones del modal
   document.getElementById("guestBtn")?.addEventListener("click", () => {
     closeAuthModal();
     appendStatusNotice("Has elegido continuar en modo fantasma 👻.");
@@ -312,12 +308,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("loginBtn")?.addEventListener("click", () => {
     closeAuthModal();
-    appendStatusNotice("Opción 'Iniciar sesión' seleccionada (pendiente de implementar).");
+    appendStatusNotice("Opción 'Iniciar sesión' seleccionada (pendiente).");
   });
 
   document.getElementById("registerBtn")?.addEventListener("click", () => {
     closeAuthModal();
-    appendStatusNotice("Opción 'Registrarse' seleccionada (pendiente de implementar).");
+    appendStatusNotice("Opción 'Registrarse' seleccionada (pendiente).");
   });
 
   renderHistoryList();
@@ -325,7 +321,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* -------------------------
-   SPLASH SCREEN
+   SPLASH SCREEN — ⭐ ESTRELLAS + 🌧️ LLUVIA
 -------------------------*/
 window.addEventListener("load", () => {
   const splash = document.getElementById("splash");
@@ -343,57 +339,51 @@ window.addEventListener("load", () => {
     "Aquí estoy, escucha lo que sientes."
   ];
 
-  // Frase inicial
   const index = new Date().getDate() % frases.length;
   if (phraseEl) phraseEl.textContent = frases[index];
 
-  // Control de reproducción de sonido
   const lastVisit = localStorage.getItem("amiko_last_visit");
   const now = Date.now();
   const shouldPlayIntro = !lastVisit || now - lastVisit > 5000;
   localStorage.setItem("amiko_last_visit", now.toString());
 
-  // Partículas de fondo
+  // ⭐ ESTRELLAS + 🌧️ LLUVIA
   const canvas = document.getElementById("particles");
   const ctx = canvas?.getContext("2d");
+
   if (canvas && ctx) {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    let particles = [];
-    for (let i = 0; i < 70; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        r: Math.random() * 3 + 1,
-        dx: (Math.random() - 0.5) * 0.6,
-        dy: (Math.random() - 0.5) * 0.6
-      });
-    }
+    let stars = [], rain = [];
+
+    for (let i = 0; i < 120; i++)
+      stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,a:Math.random(),da:Math.random()*0.01+0.002});
+
+    for (let i = 0; i < 140; i++)
+      rain.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,l:Math.random()*14+8,v:Math.random()*2+1});
 
     function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "rgba(255,255,255,.7)";
-      particles.forEach(p => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fill();
-        p.x += p.dx;
-        p.y += p.dy;
-        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      stars.forEach(s=>{
+        ctx.fillStyle=`rgba(255,255,255,${s.a})`;
+        ctx.beginPath();ctx.arc(s.x,s.y,1.4,0,Math.PI*2);ctx.fill();
+        s.a+=s.da; if(s.a<=0||s.a>=1)s.da*=-1;
       });
+
+      ctx.strokeStyle="rgba(160,190,255,.35)";
+      rain.forEach(r=>{
+        ctx.beginPath();ctx.moveTo(r.x,r.y);ctx.lineTo(r.x,r.y+r.l);ctx.stroke();
+        r.y+=r.v; if(r.y>canvas.height){r.y=-20;r.x=Math.random()*canvas.width;}
+      });
+
       requestAnimationFrame(animate);
     }
     animate();
   }
 
-  function closeSplash() {
-    if (splash) splash.classList.add("fade-out");
-    setTimeout(() => { if (splash) splash.style.display = "none"; }, 1500);
-  }
-
-  // Simulación de carga (3 segundos) antes de mostrar el botón
+  // Loader 3s
   if (loader && enterBtn) {
     enterBtn.style.display = "none";
 
@@ -412,9 +402,10 @@ window.addEventListener("load", () => {
     }, 3000);
   }
 
-  // Click en "Entrar" → cerrar splash y abrir modal
+  // Click en "Entrar"
   enterBtn?.addEventListener("click", () => {
-    closeSplash();
+    if (splash) splash.classList.add("fade-out");
+    setTimeout(() => { if (splash) splash.style.display = "none"; }, 1500);
     openAuthModal();
   });
 

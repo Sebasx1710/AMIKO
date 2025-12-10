@@ -398,13 +398,15 @@ body.dark {
   }
 }
 
-/* SPLASH */
+/* ===================== */
+/* ===== SPLASH =========*/
+/* ===================== */
+
+/* ✅ MÁS OSCURO */
 #splash {
   position: fixed;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle at center, #4a90e2, #2764a3);
+  inset: 0;
+  background: radial-gradient(circle at center, #0b1a33, #020814);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -435,7 +437,7 @@ body.dark {
 }
 
 .logo {
-  font-size:80px;            /* Opción 1: más grande */
+  font-size:80px;
   font-weight:900;
   color:white;
   letter-spacing:6px;
@@ -444,9 +446,9 @@ body.dark {
 }
 
 .phrase {
-  font-size:22px;            /* un poco más grande */
+  font-size:22px;
   color:#eaf3ff;
-  margin-top:4px;            /* más pegada a AMIKO */
+  margin-top:4px;
   min-height:26px;
   transition:opacity .4s;
 }
@@ -464,8 +466,8 @@ body.dark {
 
 .enter-btn {
   margin-top:20px;
-  padding:12px 26px;       /* más grande */
-  font-size:18px;          /* más grande */
+  padding:12px 26px;
+  font-size:18px;
   color:#1d2d4f;
   background:white;
   border:none;
@@ -478,7 +480,7 @@ body.dark {
   transform:translateY(20px) scale(.95);
   display:none;
   margin-left:auto;
-  margin-right:auto;       /* centrado */
+  margin-right:auto;
 }
 
 .enter-btn.show {
@@ -510,7 +512,7 @@ body.dark {
   100% {background-position:0% 50%;}
 }
 
-/* MODAL LOGIN / REGISTRO / MODO FANTASMA */
+/* ===== MODAL AUTENTICACIÓN ===== */
 .auth-modal {
   position:fixed;
   inset:0;
@@ -578,5 +580,3 @@ body.dark {
   transform:translateY(-2px);
   box-shadow:0 8px 20px rgba(15,23,42,0.16);
 }
-
-
