@@ -40,11 +40,14 @@ html, body {
 /* ============================================================= */
 
 /* NEW — Fondo decorado estilo opción C */
+/* 👈 CAMBIO SOLICITADO (FONDO CLARO + COVER) */
 #bgDecor {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background: radial-gradient(circle at top, #7aa9ff, #1a2a5e, #050816);
+  background: radial-gradient(circle at top, #dbe9ff, #bfd7ff, #a6c4ff);
+  background-size: cover;              /* 👈 CAMBIO */
+  background-repeat: no-repeat;        /* 👈 CAMBIO */
   opacity: 1;
 }
 
@@ -255,6 +258,9 @@ body.dark #bgDecor {
   display:flex;
   flex-direction:column;
   position:relative;
+
+  /* 👈 CAMBIO SOLICITADO: evitar que crezca infinito */
+  height: auto;
 }
 
 .chat-box{
@@ -270,6 +276,9 @@ body.dark #bgDecor {
   flex-direction:column;
   gap:12px;
   position:relative;
+
+  /* 👈 CAMBIO SOLICITADO: cuadro con scroll fijo */
+  max-height:380px;
 }
 
 
@@ -508,6 +517,7 @@ body.dark #bgDecor {
   from{opacity:0; transform:translateY(40px);}
   to{opacity:1; transform:translateY(0);}
 }
+
 
 /* ============================================================= */
 /* ======================= MODAL AUTH =========================== */
